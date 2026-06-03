@@ -34,7 +34,7 @@ src/
 ## 数据说明
 - 基金数据当前使用静态数据 (`src/data/funds.ts`)
 - 后续可通过 Qlik 后台查询替换，数据接口遵循现有 `FundProduct` 类型
-- 新闻区域使用 iframe 嵌入东方财富网
+- 新闻区域显示热门资讯内容
 
 ## 设计规范
 详见 `DESIGN.md`

@@ -8,9 +8,6 @@ import {
   Shuffle,
   Landmark,
   Wallet,
-  Layers,
-  Globe,
-  Globe2,
   Search,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -25,9 +22,6 @@ const iconMap: Record<string, React.ElementType> = {
   Shuffle,
   Landmark,
   Wallet,
-  Layers,
-  Globe,
-  Globe2,
 };
 
 export default function FundListPage() {
@@ -95,7 +89,7 @@ export default function FundListPage() {
           <div className="mb-4 flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-red-500" />
             <h2 className="text-base font-semibold text-gray-800">
-              最新财经资讯
+              热门资讯
             </h2>
           </div>
           <div className="overflow-hidden rounded-lg border border-gray-100">

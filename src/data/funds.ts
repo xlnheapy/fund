@@ -30,9 +30,7 @@ export const fundTypes: { label: FundType; icon: string }[] = [
   { label: '混合型', icon: 'Shuffle' },
   { label: '债券型', icon: 'Landmark' },
   { label: '货币型', icon: 'Wallet' },
-  { label: 'FOF基金', icon: 'Layers' },
-  { label: '内地互认基金', icon: 'Globe' },
-  { label: '香港互认基金', icon: 'Globe2' },
+  
 ];
 
 export const funds: FundProduct[] = [
