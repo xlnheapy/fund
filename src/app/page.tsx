@@ -94,8 +94,8 @@ export default function FundListPage() {
           </div>
           <div className="overflow-hidden rounded-lg border border-gray-100">
             <iframe
-              src="https://finance.eastmoney.com/"
-              title="财经新闻"
+              src="https://www.hsbcjt.cn/rmzx/scgd"
+              title="热门资讯"
               className="h-[500px] w-full"
               sandbox="allow-scripts allow-same-origin"
               loading="lazy"
@@ -103,7 +103,7 @@ export default function FundListPage() {
             />
           </div>
           <p className="mt-2 text-xs text-gray-400">
-            内容来源：东方财富网 · 资讯仅供参考
+            内容来源：汇丰晋信 · 资讯仅供参考
           </p>
         </div>
       </div>
