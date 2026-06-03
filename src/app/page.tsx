@@ -106,6 +106,29 @@ export default function FundListPage() {
             内容来源：汇丰晋信 · 资讯仅供参考
           </p>
         </div>
+
+        {/* 东方财富网热门资讯 */}
+        <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-blue-500" />
+            <h2 className="text-base font-semibold text-gray-800">
+              东方财富 · 热门资讯
+            </h2>
+          </div>
+          <div className="overflow-hidden rounded-lg border border-gray-100">
+            <iframe
+              src="https://finance.eastmoney.com/"
+              title="东方财富热门资讯"
+              className="h-[500px] w-full"
+              sandbox="allow-scripts allow-same-origin"
+              loading="lazy"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+          <p className="mt-2 text-xs text-gray-400">
+            内容来源：东方财富网 · 资讯仅供参考
+          </p>
+        </div>
       </div>
     </div>
   );
