@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -10,12 +11,27 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
+import { Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import type { FundProduct } from '@/data/funds';
 
 interface FundTableProps {
   funds: FundProduct[];
 }
+
+type SortKey = 'unitNav' | 'dayGrowth' | 'accumNav' | 'yearReturn' | 'code';
+type SortDir = 'asc' | 'desc';
+
+const sortableColumns: {
+  key: SortKey;
+  label: string;
+  align: 'right' | 'left';
+}[] = [
+  { key: 'code', label: '基金代码', align: 'left' },
+  { key: 'unitNav', label: '单位净值', align: 'right' },
+  { key: 'dayGrowth', label: '日增长率', align: 'right' },
+  { key: 'accumNav', label: '累计净值', align: 'right' },
+  { key: 'yearReturn', label: '近一年收益率', align: 'right' },
+];
 
 function formatNav(value: number): string {
   return value.toFixed(4);
@@ -27,7 +43,48 @@ function formatPercent(value: number): string {
 }
 
 export default function FundTable({ funds }: FundTableProps) {
-  if (funds.length === 0) {
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>('desc');
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      if (sortDir === 'desc') {
+        setSortDir('asc');
+      } else {
+        setSortKey(null);
+        setSortDir('desc');
+      }
+    } else {
+      setSortKey(key);
+      setSortDir(key === 'dayGrowth' || key === 'yearReturn' ? 'desc' : 'asc');
+    }
+  };
+
+  const sortedFunds = useMemo(() => {
+    if (!sortKey) return funds;
+    return [...funds].sort((a, b) => {
+      const aVal = a[sortKey];
+      const bVal = b[sortKey];
+      const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+  }, [funds, sortKey, sortDir]);
+
+  const renderSortIcon = (key: SortKey) => {
+    if (sortKey !== key) {
+      return <ArrowUpDown className="ml-1 h-3 w-3 opacity-40" />;
+    }
+    return sortDir === 'asc' ? (
+      <ArrowUp className="ml-1 h-3 w-3 text-gray-800" />
+    ) : (
+      <ArrowDown className="ml-1 h-3 w-3 text-gray-800" />
+    );
+  };
+
+  const isSortable = (key: string): key is SortKey =>
+    sortableColumns.some((c) => c.key === key);
+
+  if (sortedFunds.length === 0) {
     return (
       <div className="rounded-xl border border-gray-200 bg-white p-12 text-center shadow-sm">
         <p className="text-gray-400">暂无匹配的基金产品</p>
@@ -43,8 +100,14 @@ export default function FundTable({ funds }: FundTableProps) {
             <TableHead className="w-[180px] text-left text-xs font-semibold text-gray-600">
               基金简称
             </TableHead>
-            <TableHead className="w-[100px] text-left text-xs font-semibold text-gray-600">
-              基金代码
+            <TableHead
+              className="w-[100px] cursor-pointer select-none text-left text-xs font-semibold text-gray-600 hover:text-gray-900"
+              onClick={() => handleSort('code')}
+            >
+              <span className="inline-flex items-center">
+                基金代码
+                {renderSortIcon('code')}
+              </span>
             </TableHead>
             <TableHead className="w-[100px] text-left text-xs font-semibold text-gray-600">
               强定投代码
@@ -52,17 +115,41 @@ export default function FundTable({ funds }: FundTableProps) {
             <TableHead className="w-[100px] text-left text-xs font-semibold text-gray-600">
               净值日期
             </TableHead>
-            <TableHead className="w-[110px] text-right text-xs font-semibold text-gray-600">
-              单位净值
+            <TableHead
+              className="w-[110px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
+              onClick={() => handleSort('unitNav')}
+            >
+              <span className="inline-flex items-center justify-end">
+                单位净值
+                {renderSortIcon('unitNav')}
+              </span>
             </TableHead>
-            <TableHead className="w-[100px] text-right text-xs font-semibold text-gray-600">
-              日增长率
+            <TableHead
+              className="w-[100px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
+              onClick={() => handleSort('dayGrowth')}
+            >
+              <span className="inline-flex items-center justify-end">
+                日增长率
+                {renderSortIcon('dayGrowth')}
+              </span>
             </TableHead>
-            <TableHead className="w-[110px] text-right text-xs font-semibold text-gray-600">
-              累计净值
+            <TableHead
+              className="w-[110px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
+              onClick={() => handleSort('accumNav')}
+            >
+              <span className="inline-flex items-center justify-end">
+                累计净值
+                {renderSortIcon('accumNav')}
+              </span>
             </TableHead>
-            <TableHead className="w-[130px] text-right text-xs font-semibold text-gray-600">
-              近一年收益率
+            <TableHead
+              className="w-[130px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
+              onClick={() => handleSort('yearReturn')}
+            >
+              <span className="inline-flex items-center justify-end">
+                近一年收益率
+                {renderSortIcon('yearReturn')}
+              </span>
             </TableHead>
             <TableHead className="w-[100px] text-center text-xs font-semibold text-gray-600">
               状态
@@ -73,7 +160,7 @@ export default function FundTable({ funds }: FundTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {funds.map((fund) => (
+          {sortedFunds.map((fund) => (
             <TableRow
               key={fund.id}
               className="border-b border-gray-100 transition-colors hover:bg-gray-50/50"
