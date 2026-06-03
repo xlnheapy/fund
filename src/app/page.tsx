@@ -94,10 +94,12 @@ export default function FundListPage() {
           </div>
           <div className="overflow-hidden rounded-lg border border-gray-100">
             <iframe
-              src="/api/proxy?url=https%3A%2F%2Fwww.hsbcjt.cn%2Frmzx%2Fscgd"
+              src="https://www.hsbcjt.cn/rmzx/scgd"
               title="热门资讯"
               className="h-[500px] w-full"
+              sandbox="allow-scripts allow-same-origin"
               loading="lazy"
+              referrerPolicy="no-referrer"
             />
           </div>
           <p className="mt-2 text-xs text-gray-400">
@@ -115,10 +117,12 @@ export default function FundListPage() {
           </div>
           <div className="overflow-hidden rounded-lg border border-gray-100">
             <iframe
-              src="/api/proxy?url=https%3A%2F%2Ffinance.eastmoney.com%2F"
+              src="https://finance.eastmoney.com/"
               title="东方财富热门资讯"
               className="h-[500px] w-full"
+              sandbox="allow-scripts allow-same-origin"
               loading="lazy"
+              referrerPolicy="no-referrer"
             />
           </div>
           <p className="mt-2 text-xs text-gray-400">
