@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import type { FundProduct } from '@/data/funds';
@@ -125,8 +124,6 @@ export default function FundTable({ funds }: FundTableProps) {
                 {renderSortIcon('yearReturn')}
               </span>
             </TableHead>
-            {/* 状态列：表头文字隐藏，保留列宽和排序结构 */}
-            <TableHead className="w-[100px]" aria-label="状态" />
             <TableHead className="w-[120px] text-center text-xs font-semibold text-gray-600">
               基金详情
             </TableHead>
@@ -160,14 +157,6 @@ export default function FundTable({ funds }: FundTableProps) {
                 }`}
               >
                 {formatPercent(fund.yearReturn)}
-              </TableCell>
-              <TableCell className="text-center">
-                <Badge
-                  variant="secondary"
-                  className="bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 hover:bg-green-50"
-                >
-                  {fund.status}
-                </Badge>
               </TableCell>
               <TableCell className="text-center">
                 <Button
