@@ -18,7 +18,7 @@ interface FundTableProps {
   funds: FundProduct[];
 }
 
-type SortKey = 'unitNav' | 'dayGrowth' | 'accumNav' | 'yearReturn' | 'code';
+type SortKey = 'unitNav' | 'yearReturn' | 'code';
 type SortDir = 'asc' | 'desc';
 
 const sortableColumns: {
@@ -28,8 +28,6 @@ const sortableColumns: {
 }[] = [
   { key: 'code', label: '基金代码', align: 'left' },
   { key: 'unitNav', label: '单位净值', align: 'right' },
-  { key: 'dayGrowth', label: '日增长率', align: 'right' },
-  { key: 'accumNav', label: '累计净值', align: 'right' },
   { key: 'yearReturn', label: '近一年收益率', align: 'right' },
 ];
 
@@ -56,7 +54,7 @@ export default function FundTable({ funds }: FundTableProps) {
       }
     } else {
       setSortKey(key);
-      setSortDir(key === 'dayGrowth' || key === 'yearReturn' ? 'desc' : 'asc');
+      setSortDir(key === 'yearReturn' ? 'desc' : 'asc');
     }
   };
 
@@ -81,9 +79,6 @@ export default function FundTable({ funds }: FundTableProps) {
     );
   };
 
-  const isSortable = (key: string): key is SortKey =>
-    sortableColumns.some((c) => c.key === key);
-
   if (sortedFunds.length === 0) {
     return (
       <div className="rounded-xl border border-gray-200 bg-white p-12 text-center shadow-sm">
@@ -97,7 +92,7 @@ export default function FundTable({ funds }: FundTableProps) {
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-50 hover:bg-gray-50">
-            <TableHead className="w-[180px] text-left text-xs font-semibold text-gray-600">
+            <TableHead className="w-[200px] text-left text-xs font-semibold text-gray-600">
               基金简称
             </TableHead>
             <TableHead
@@ -110,13 +105,10 @@ export default function FundTable({ funds }: FundTableProps) {
               </span>
             </TableHead>
             <TableHead className="w-[100px] text-left text-xs font-semibold text-gray-600">
-              强定投代码
-            </TableHead>
-            <TableHead className="w-[100px] text-left text-xs font-semibold text-gray-600">
               净值日期
             </TableHead>
             <TableHead
-              className="w-[110px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
+              className="w-[120px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
               onClick={() => handleSort('unitNav')}
             >
               <span className="inline-flex items-center justify-end">
@@ -125,25 +117,7 @@ export default function FundTable({ funds }: FundTableProps) {
               </span>
             </TableHead>
             <TableHead
-              className="w-[100px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
-              onClick={() => handleSort('dayGrowth')}
-            >
-              <span className="inline-flex items-center justify-end">
-                日增长率
-                {renderSortIcon('dayGrowth')}
-              </span>
-            </TableHead>
-            <TableHead
-              className="w-[110px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
-              onClick={() => handleSort('accumNav')}
-            >
-              <span className="inline-flex items-center justify-end">
-                累计净值
-                {renderSortIcon('accumNav')}
-              </span>
-            </TableHead>
-            <TableHead
-              className="w-[130px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
+              className="w-[140px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
               onClick={() => handleSort('yearReturn')}
             >
               <span className="inline-flex items-center justify-end">
@@ -151,11 +125,10 @@ export default function FundTable({ funds }: FundTableProps) {
                 {renderSortIcon('yearReturn')}
               </span>
             </TableHead>
-            <TableHead className="w-[100px] text-center text-xs font-semibold text-gray-600">
-              状态
-            </TableHead>
-            <TableHead className="w-[100px] text-center text-xs font-semibold text-gray-600">
-              购买渠道
+            {/* 状态列：表头文字隐藏，保留列宽和排序结构 */}
+            <TableHead className="w-[100px]" aria-label="状态" />
+            <TableHead className="w-[120px] text-center text-xs font-semibold text-gray-600">
+              基金详情
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -171,28 +144,11 @@ export default function FundTable({ funds }: FundTableProps) {
               <TableCell className="text-sm text-gray-600">
                 {fund.code}
               </TableCell>
-              <TableCell className="text-sm text-gray-400">
-                {fund.strongCode || '--'}
-              </TableCell>
               <TableCell className="text-sm text-gray-600">
                 {fund.navDate}
               </TableCell>
               <TableCell className="text-right text-sm tabular-nums text-gray-900">
                 {formatNav(fund.unitNav)}
-              </TableCell>
-              <TableCell
-                className={`text-right text-sm tabular-nums ${
-                  fund.dayGrowth > 0
-                    ? 'text-red-600'
-                    : fund.dayGrowth < 0
-                      ? 'text-green-600'
-                      : 'text-gray-900'
-                }`}
-              >
-                {formatPercent(fund.dayGrowth)}
-              </TableCell>
-              <TableCell className="text-right text-sm tabular-nums text-gray-900">
-                {formatNav(fund.accumNav)}
               </TableCell>
               <TableCell
                 className={`text-right text-sm tabular-nums ${
