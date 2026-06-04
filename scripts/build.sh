@@ -15,3 +15,7 @@ echo "Bundling server with tsup..."
 pnpm tsup src/server.ts --format cjs --platform node --target node20 --outDir dist --no-splitting --no-minify
 
 echo "Build completed successfully!"
+
+echo "Packaging build artifacts..."
+zip -r /tmp/fund-project-build.zip .next/ dist/ public/ package.json next.config.* .coze scripts/ --exclude="node_modules/*" > /dev/null 2>&1
+echo "Build package created: /tmp/fund-project-build.zip"
