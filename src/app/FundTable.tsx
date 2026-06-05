@@ -10,14 +10,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
-import type { FundProduct } from '@/data/funds';
+import { Search, ArrowUpDown, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
+import type { FundRecord } from './page';
 
 interface FundTableProps {
-  funds: FundProduct[];
+  funds: FundRecord[];
+  loading?: boolean;
 }
 
-type SortKey = 'unitNav' | 'yearReturn' | 'code';
+type SortKey = 'fund_code' | 'unit_nav' | 'year_return';
 type SortDir = 'asc' | 'desc';
 
 const sortableColumns: {
@@ -25,21 +26,23 @@ const sortableColumns: {
   label: string;
   align: 'right' | 'left';
 }[] = [
-  { key: 'code', label: '基金代码', align: 'left' },
-  { key: 'unitNav', label: '单位净值', align: 'right' },
-  { key: 'yearReturn', label: '近一年收益率', align: 'right' },
+  { key: 'fund_code', label: '基金代码', align: 'left' },
+  { key: 'unit_nav', label: '单位净值', align: 'right' },
+  { key: 'year_return', label: '近一年收益率', align: 'right' },
 ];
 
-function formatNav(value: number): string {
-  return value.toFixed(4);
+function formatNav(value: string | null): string {
+  return value ? Number(value).toFixed(4) : '—';
 }
 
-function formatPercent(value: number): string {
-  const sign = value > 0 ? '+' : '';
-  return `${sign}${value.toFixed(2)}%`;
+function formatPercent(value: string | null): string {
+  if (!value) return '—';
+  const num = Number(value);
+  const sign = num > 0 ? '+' : '';
+  return `${sign}${num.toFixed(2)}%`;
 }
 
-export default function FundTable({ funds }: FundTableProps) {
+export default function FundTable({ funds, loading }: FundTableProps) {
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>('desc');
 
@@ -53,16 +56,21 @@ export default function FundTable({ funds }: FundTableProps) {
       }
     } else {
       setSortKey(key);
-      setSortDir(key === 'yearReturn' ? 'desc' : 'asc');
+      setSortDir(key === 'year_return' ? 'desc' : 'asc');
     }
   };
 
   const sortedFunds = useMemo(() => {
     if (!sortKey) return funds;
     return [...funds].sort((a, b) => {
-      const aVal = a[sortKey];
-      const bVal = b[sortKey];
-      const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+      const aVal = a[sortKey] ?? '';
+      const bVal = b[sortKey] ?? '';
+      const aNum = Number(aVal);
+      const bNum = Number(bVal);
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+        return sortDir === 'asc' ? aNum - bNum : bNum - aNum;
+      }
+      const cmp = String(aVal).localeCompare(String(bVal));
       return sortDir === 'asc' ? cmp : -cmp;
     });
   }, [funds, sortKey, sortDir]);
@@ -77,6 +85,15 @@ export default function FundTable({ funds }: FundTableProps) {
       <ArrowDown className="ml-1 h-3 w-3 text-gray-800" />
     );
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center rounded-xl border border-gray-200 bg-white p-12 shadow-sm">
+        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+        <span className="ml-2 text-gray-400">加载中...</span>
+      </div>
+    );
+  }
 
   if (sortedFunds.length === 0) {
     return (
@@ -96,11 +113,11 @@ export default function FundTable({ funds }: FundTableProps) {
             </TableHead>
             <TableHead
               className="w-[100px] cursor-pointer select-none text-left text-xs font-semibold text-gray-600 hover:text-gray-900"
-              onClick={() => handleSort('code')}
+              onClick={() => handleSort('fund_code')}
             >
               <span className="inline-flex items-center">
                 基金代码
-                {renderSortIcon('code')}
+                {renderSortIcon('fund_code')}
               </span>
             </TableHead>
             <TableHead className="w-[100px] text-left text-xs font-semibold text-gray-600">
@@ -108,20 +125,20 @@ export default function FundTable({ funds }: FundTableProps) {
             </TableHead>
             <TableHead
               className="w-[120px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
-              onClick={() => handleSort('unitNav')}
+              onClick={() => handleSort('unit_nav')}
             >
               <span className="inline-flex items-center justify-end">
                 单位净值
-                {renderSortIcon('unitNav')}
+                {renderSortIcon('unit_nav')}
               </span>
             </TableHead>
             <TableHead
               className="w-[140px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
-              onClick={() => handleSort('yearReturn')}
+              onClick={() => handleSort('year_return')}
             >
               <span className="inline-flex items-center justify-end">
                 近一年收益率
-                {renderSortIcon('yearReturn')}
+                {renderSortIcon('year_return')}
               </span>
             </TableHead>
             <TableHead className="w-[120px] text-center text-xs font-semibold text-gray-600">
@@ -130,46 +147,49 @@ export default function FundTable({ funds }: FundTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedFunds.map((fund) => (
-            <TableRow
-              key={fund.id}
-              className="border-b border-gray-100 transition-colors hover:bg-gray-50/50"
-            >
-              <TableCell className="text-sm font-medium text-gray-900">
-                {fund.name}
-              </TableCell>
-              <TableCell className="text-sm text-gray-600">
-                {fund.code}
-              </TableCell>
-              <TableCell className="text-sm text-gray-600">
-                {fund.navDate}
-              </TableCell>
-              <TableCell className="text-right text-sm tabular-nums text-gray-900">
-                {formatNav(fund.unitNav)}
-              </TableCell>
-              <TableCell
-                className={`text-right text-sm tabular-nums ${
-                  fund.yearReturn > 0
-                    ? 'text-red-600'
-                    : fund.yearReturn < 0
-                      ? 'text-green-600'
-                      : 'text-gray-900'
-                }`}
+          {sortedFunds.map((fund) => {
+            const yearReturnNum = Number(fund.year_return);
+            return (
+              <TableRow
+                key={fund.id}
+                className="border-b border-gray-100 transition-colors hover:bg-gray-50/50"
               >
-                {formatPercent(fund.yearReturn)}
-              </TableCell>
-              <TableCell className="text-center">
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="h-7 gap-1 rounded-md bg-red-600 px-3 text-xs font-medium text-white hover:bg-red-700"
+                <TableCell className="text-sm font-medium text-gray-900">
+                  {fund.fund_name}
+                </TableCell>
+                <TableCell className="text-sm text-gray-600">
+                  {fund.fund_code}
+                </TableCell>
+                <TableCell className="text-sm text-gray-600">
+                  {fund.nav_date ?? '—'}
+                </TableCell>
+                <TableCell className="text-right text-sm tabular-nums text-gray-900">
+                  {formatNav(fund.unit_nav)}
+                </TableCell>
+                <TableCell
+                  className={`text-right text-sm tabular-nums ${
+                    yearReturnNum > 0
+                      ? 'text-red-600'
+                      : yearReturnNum < 0
+                        ? 'text-green-600'
+                        : 'text-gray-900'
+                  }`}
                 >
-                  <Search className="h-3 w-3" />
-                  查看
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+                  {formatPercent(fund.year_return)}
+                </TableCell>
+                <TableCell className="text-center">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="h-7 gap-1 rounded-md bg-red-600 px-3 text-xs font-medium text-white hover:bg-red-700"
+                  >
+                    <Search className="h-3 w-3" />
+                    查看
+                  </Button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
