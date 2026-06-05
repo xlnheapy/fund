@@ -27,8 +27,9 @@ export interface FundRecord {
   fund_code: string;
   fund_type: string;
   nav_date: string | null;
-  unit_nav: string | null;
-  year_return: string | null;
+  nav: string | null;
+  shouyi: string | null;
+  fund_url: string | null;
 }
 
 const iconMap: Record<string, React.ElementType> = {
@@ -84,7 +85,7 @@ export default function FundListPage() {
 
         {/* Tab 导航 + 搜索栏 */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          {/* Tab 导航 */}
+          {/* Tab 导航 — fund_type 分类 */}
           <div className="flex flex-wrap gap-2">
             {fundTypes.map(({ label, icon }) => {
               const IconComp = iconMap[icon];

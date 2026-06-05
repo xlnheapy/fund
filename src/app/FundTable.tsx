@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Search, ArrowUpDown, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, Loader2, ExternalLink } from 'lucide-react';
 import type { FundRecord } from './page';
 
 interface FundTableProps {
@@ -18,7 +18,7 @@ interface FundTableProps {
   loading?: boolean;
 }
 
-type SortKey = 'fund_code' | 'unit_nav' | 'year_return';
+type SortKey = 'fund_code' | 'nav' | 'shouyi';
 type SortDir = 'asc' | 'desc';
 
 const sortableColumns: {
@@ -27,8 +27,8 @@ const sortableColumns: {
   align: 'right' | 'left';
 }[] = [
   { key: 'fund_code', label: '基金代码', align: 'left' },
-  { key: 'unit_nav', label: '单位净值', align: 'right' },
-  { key: 'year_return', label: '近一年收益率', align: 'right' },
+  { key: 'nav', label: '单位净值', align: 'right' },
+  { key: 'shouyi', label: '近一年收益率', align: 'right' },
 ];
 
 function formatNav(value: string | null): string {
@@ -56,7 +56,7 @@ export default function FundTable({ funds, loading }: FundTableProps) {
       }
     } else {
       setSortKey(key);
-      setSortDir(key === 'year_return' ? 'desc' : 'asc');
+      setSortDir(key === 'shouyi' ? 'desc' : 'asc');
     }
   };
 
@@ -85,6 +85,12 @@ export default function FundTable({ funds, loading }: FundTableProps) {
       <ArrowDown className="ml-1 h-3 w-3 text-gray-800" />
     );
   };
+
+  const handleDetailClick = useCallback((url: string | null) => {
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -125,20 +131,20 @@ export default function FundTable({ funds, loading }: FundTableProps) {
             </TableHead>
             <TableHead
               className="w-[120px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
-              onClick={() => handleSort('unit_nav')}
+              onClick={() => handleSort('nav')}
             >
               <span className="inline-flex items-center justify-end">
                 单位净值
-                {renderSortIcon('unit_nav')}
+                {renderSortIcon('nav')}
               </span>
             </TableHead>
             <TableHead
               className="w-[140px] cursor-pointer select-none text-right text-xs font-semibold text-gray-600 hover:text-gray-900"
-              onClick={() => handleSort('year_return')}
+              onClick={() => handleSort('shouyi')}
             >
               <span className="inline-flex items-center justify-end">
                 近一年收益率
-                {renderSortIcon('year_return')}
+                {renderSortIcon('shouyi')}
               </span>
             </TableHead>
             <TableHead className="w-[120px] text-center text-xs font-semibold text-gray-600">
@@ -148,7 +154,7 @@ export default function FundTable({ funds, loading }: FundTableProps) {
         </TableHeader>
         <TableBody>
           {sortedFunds.map((fund) => {
-            const yearReturnNum = Number(fund.year_return);
+            const shouyiNum = Number(fund.shouyi);
             return (
               <TableRow
                 key={fund.id}
@@ -164,26 +170,27 @@ export default function FundTable({ funds, loading }: FundTableProps) {
                   {fund.nav_date ?? '—'}
                 </TableCell>
                 <TableCell className="text-right text-sm tabular-nums text-gray-900">
-                  {formatNav(fund.unit_nav)}
+                  {formatNav(fund.nav)}
                 </TableCell>
                 <TableCell
                   className={`text-right text-sm tabular-nums ${
-                    yearReturnNum > 0
+                    shouyiNum > 0
                       ? 'text-red-600'
-                      : yearReturnNum < 0
+                      : shouyiNum < 0
                         ? 'text-green-600'
                         : 'text-gray-900'
                   }`}
                 >
-                  {formatPercent(fund.year_return)}
+                  {formatPercent(fund.shouyi)}
                 </TableCell>
                 <TableCell className="text-center">
                   <Button
                     variant="default"
                     size="sm"
+                    onClick={() => handleDetailClick(fund.fund_url)}
                     className="h-7 gap-1 rounded-md bg-red-600 px-3 text-xs font-medium text-white hover:bg-red-700"
                   >
-                    <Search className="h-3 w-3" />
+                    <ExternalLink className="h-3 w-3" />
                     查看
                   </Button>
                 </TableCell>

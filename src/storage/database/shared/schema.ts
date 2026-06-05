@@ -1,5 +1,4 @@
 import { pgTable, serial, timestamp, varchar, numeric, index } from "drizzle-orm/pg-core"
-import { sql } from "drizzle-orm"
 
 export const healthCheck = pgTable("health_check", {
 	id: serial().notNull(),
@@ -12,8 +11,9 @@ export const fundTest = pgTable("fund_test", {
 	fundCode: varchar("fund_code", { length: 20 }).notNull(),
 	fundType: varchar("fund_type", { length: 32 }).notNull(),
 	navDate: varchar("nav_date", { length: 16 }),
-	unitNav: numeric("unit_nav", { precision: 10, scale: 4 }),
-	yearReturn: numeric("year_return", { precision: 8, scale: 4 }),
+	nav: numeric("nav", { precision: 10, scale: 4 }),
+	shouyi: numeric("shouyi", { precision: 8, scale: 4 }),
+	fundUrl: varchar("fund_url", { length: 512 }),
 	createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => [
 	index("fund_test_code_idx").on(table.fundCode),
