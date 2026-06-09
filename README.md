@@ -13,13 +13,13 @@
 
 ```bash
 # 安装依赖
-pnpm install
+npm install
 
 # 启动开发服务器（端口 5000）
-pnpm dev
+npm run dev
 
 # 仅启动 Next.js（不启动 WebSocket 服务）
-pnpm dev:next
+npm run dev:next
 ```
 
 浏览器访问 http://localhost:5000
@@ -27,8 +27,8 @@ pnpm dev:next
 ## 生产构建
 
 ```bash
-pnpm build
-pnpm start
+npm run build
+npm start
 ```
 
 ## 功能
@@ -62,8 +62,6 @@ src/
 │   └── ws-client.ts           # WebSocket 客户端工具
 ├── ws-handlers/
 │   └── qlik.ts                # WS 消息处理
-├── data/
-│   └── funds.ts               # 静态数据（类型定义）
 ├── components/ui/             # shadcn/ui 组件
 └── server.ts                  # 自定义服务器
 ```
