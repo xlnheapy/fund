@@ -334,7 +334,7 @@ export function createQlikService(useMock = true): QlikService {
  * 全局单例（推荐使用）
  *
  * 【自动判断模式】
- *   - 开发环境（NODE_ENV=development 或 COZE_PROJECT_ENV=DEV）→ useMock=true
+ *   - 开发环境（NODE_ENV=development）→ useMock=true
  *   - 生产环境 → useMock=false（需设置 QLIK_WSS_URL）
  *
  * 【使用方式】
@@ -348,7 +348,7 @@ export function getQlikService(): QlikService {
     defaultInstance = createQlikService(
       // 开发环境（DEV）自动使用 mock 数据
       process.env.NODE_ENV === 'development' ||
-        process.env.COZE_PROJECT_ENV === 'DEV',
+        process.env.NODE_ENV === 'development',
     );
   }
   return defaultInstance;
