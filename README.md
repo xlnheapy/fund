@@ -1,59 +1,57 @@
 # 基金产品列表
 
-金融类基金产品列表页面，支持 Tab 筛选、关键词搜索、数据排序、热门资讯嵌入。
+基于 Next.js 16 + React 19 + TypeScript 5 的基金产品列表展示系统，支持 Tab 分类筛选、搜索、数据表格排序、热门资讯嵌入等功能。
+
+## 功能特性
+
+- Tab 分类筛选（全部、股票型、指数型、混合型、债券型、货币型）
+- 关键词搜索
+- 数据表格（基金代码、名称、净值、收益率等）
+- 列排序功能
+- 热门资讯嵌入（汇丰晋信、东方财富）
+- Qlik 数据源对接（enigma.js，开发环境使用 Mock 数据）
+- 响应式设计
 
 ## 技术栈
 
-- **Next.js 16** + React 19 + TypeScript 5
-- **Tailwind CSS v4** + shadcn/ui 组件库
-- **WebSocket** (ws) — 预留 Qlik 数据通道
-- **Mock 数据** — 开发环境无需后端
+- **框架**: Next.js 16 (App Router)
+- **UI**: React 19 + TypeScript 5
+- **样式**: Tailwind CSS v4 + shadcn/ui
+- **数据源**: Qlik Engine API（enigma.js SDK）
+- **开发环境**: Mock 数据（自动切换）
 
-## 快速开始
+## 本地开发
+
+### 1. 安装依赖
 
 ```bash
-# 安装依赖
 npm install
-
-# 启动开发服务器（端口 5000）
-npm run dev
-
-# 仅启动 Next.js（不启动 WebSocket 服务）
-npm run dev:next
 ```
 
-浏览器访问 http://localhost:5000
-
-## 生产构建
+### 2. 启动开发服务器
 
 ```bash
-# 构建并自动打包成 zip
-npm run build
+npm run dev
+```
 
-# 启动生产服务器
-npm start
+访问 http://localhost:5000
+
+> **说明**: 开发环境自动使用 Mock 数据（15 只基金），无需配置 Qlik 连接。
+
+## 生产部署
+
+### 1. 构建并打包
+
+```bash
+npm run build
 ```
 
 构建完成后会在 `dist/` 目录生成：
-- `server.js` — 服务器启动文件
-- `fund-product-list.zip` — 完整部署包
+- `fund-product-list.zip` — 完整部署包（包含 .next、public、package.json 等）
 
-### 部署方式
+### 2. 部署到服务器
 
-**方式一：直接部署**
-
-将以下文件上传到服务器：
-- `.next/` — Next.js 构建产物
-- `public/` — 静态资源
-- `dist/server.js` — 服务器文件
-- `package.json` + `package-lock.json`
-
-```bash
-npm install --production
-npm start
-```
-
-**方式二：使用 zip 包**
+**方式一：使用 zip 包**
 
 ```bash
 unzip dist/fund-product-list.zip -d fund-app
@@ -62,37 +60,83 @@ npm install --production
 npm start
 ```
 
-## 功能
+**方式二：直接部署**
 
-| 功能 | 说明 |
-|------|------|
-| Tab 分类 | 按基金类型筛选：全部、股票型、指数型、混合型、债券型、货币型 |
-| 关键词搜索 | 支持按基金代码/名称过滤 |
-| 数据排序 | 支持单位净值、收益率、基金代码排序 |
-| 基金详情 | 点击跳转基金详情页 |
-| 热门资讯 | 嵌入外部资讯页面 |
+将以下文件/目录上传到服务器：
+- `.next/` — Next.js 构建产物
+- `public/` — 静态资源
+- `package.json` + `package-lock.json` — 依赖配置
+- `next.config.ts` — Next.js 配置
 
-## 数据对接
+在服务器上执行：
+```bash
+npm install --production
+npm start
+```
 
-开发环境使用 Mock 数据，生产环境通过 WebSocket (WSS) 从 Qlik 引擎**查询**数据（只读，不推送）。
+### 3. 环境变量配置
 
-详见 `src/lib/qlik-service.ts`
+生产环境需要配置 Qlik 连接：
+
+```bash
+# .env.production
+QLIK_WSS_URL=wss://your-qlik-server:4747/app/engineData
+QLIK_APP_ID=your-qlik-app-guid
+```
+
+如果不配置 `QLIK_WSS_URL`，将自动使用 Mock 数据。
+
+## 数据源说明
+
+### 开发环境
+- 自动使用 Mock 数据（15 只基金）
+- 无需配置 Qlik 连接
+
+### 生产环境
+- 通过 enigma.js（Qlik 官方 SDK）连接 Qlik Engine
+- 查询 `fund_test` 表数据
+- 字段：fund_name, fund_code, fund_type, nav, nav_date, shouyi, fund_url
+- 只读查询，不推送数据到 Qlik
+
+### 接入真实 Qlik 步骤
+1. 设置环境变量 `QLIK_WSS_URL` 和 `QLIK_APP_ID`
+2. 确保 Qlik App 中存在 `fund_test` 表
+3. 如果字段名不同，修改 `src/lib/qlik-service.ts` 中 `buildHyperCubeDef()` 的 `qFieldDefs`
 
 ## 项目结构
 
 ```
-src/
-├── app/
-│   ├── page.tsx              # 主页面
-│   ├── FundTable.tsx          # 基金表格组件
-│   ├── layout.tsx             # 根布局
-│   ├── globals.css            # 全局样式
-│   └── api/funds/route.ts     # 基金数据 API
-├── lib/
-│   ├── qlik-service.ts        # Qlik WSS 数据服务
-│   └── ws-client.ts           # WebSocket 客户端工具
-├── ws-handlers/
-│   └── qlik.ts                # WS 消息处理
-├── components/ui/             # shadcn/ui 组件
-└── server.ts                  # 自定义服务器
+.
+├── src/
+│   ├── app/
+│   │   ├── page.tsx              # 主页面（Tab、搜索、表格、资讯）
+│   │   ├── FundTable.tsx         # 基金数据表格组件
+│   │   └── api/
+│   │       └── funds/
+│   │           └── route.ts      # 基金数据 API
+│   ├── lib/
+│   │   └── qlik-service.ts       # Qlik 服务（enigma.js + Mock）
+│   └── components/ui/            # shadcn/ui 组件
+├── public/                       # 静态资源
+├── scripts/
+│   └── build-zip.ts              # 生产打包脚本
+└── package.json
 ```
+
+## 常见问题
+
+### 1. Qlik 连接失败
+
+检查环境变量 `QLIK_WSS_URL` 和 `QLIK_APP_ID` 是否正确配置。
+
+### 2. 构建失败
+
+确保 Node.js 版本 >= 18。
+
+### 3. 数据字段不匹配
+
+修改 `src/lib/qlik-service.ts` 中 `buildHyperCubeDef()` 方法的 `qFieldDefs`，使其与 Qlik App 中的实际字段名一致。
+
+## License
+
+MIT
