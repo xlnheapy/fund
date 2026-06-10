@@ -346,9 +346,8 @@ let defaultInstance: QlikService | null = null;
 export function getQlikService(): QlikService {
   if (!defaultInstance) {
     defaultInstance = createQlikService(
-      // 开发环境（DEV）自动使用 mock 数据
-      process.env.NODE_ENV === 'development' ||
-        process.env.NODE_ENV === 'development',
+      // 开发环境或没有配置 QLIK_WSS_URL 时自动使用 mock 数据
+      process.env.NODE_ENV === 'development' || !process.env.QLIK_WSS_URL,
     );
   }
   return defaultInstance;
