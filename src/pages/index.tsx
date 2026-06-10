@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './index.less';
+import { getFunds, Fund } from '@/services/qlik-service';
 
 // 基金类型定义
 const FUND_TYPES = [
@@ -10,17 +11,6 @@ const FUND_TYPES = [
   { key: '债券型', label: '债券型' },
   { key: '货币型', label: '货币型' },
 ];
-
-// 基金数据类型
-interface Fund {
-  fund_name: string;
-  fund_code: string;
-  fund_type: string;
-  nav_date: string;
-  nav: string;
-  shouyi: string;
-  fund_url: string;
-}
 
 // 排序类型
 type SortField = 'fund_code' | 'nav' | 'shouyi';
@@ -44,9 +34,8 @@ export default function FundList() {
   const fetchFunds = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/funds');
-      const result = await response.json();
-      setFunds(result.data || []);
+      const data = await getFunds();
+      setFunds(data);
     } catch (error) {
       console.error('获取基金数据失败:', error);
     } finally {
