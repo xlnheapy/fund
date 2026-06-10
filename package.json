@@ -1,13 +1,21 @@
 {
-  "name": "fund-list-qlik-extension",
+  "name": "fund-product-list",
   "version": "1.0.0",
-  "private": true,
-  "description": "Qlik Sense Extension - 基金产品列表展示",
+  "description": "基金产品列表 - 基于 React + Umi",
   "scripts": {
-    "build": "node scripts/build-extension.js",
-    "dev": "node scripts/dev-server.js"
+    "dev": "umi dev",
+    "build": "umi build",
+    "start": "umi dev"
   },
-  "engines": {
-    "node": ">=18"
+  "dependencies": {
+    "umi": "^4.3.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "enigma.js": "^2.14.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.4.0"
   }
 }

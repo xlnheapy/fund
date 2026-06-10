@@ -1,8 +1,0 @@
-{
-  "name": "Fund Product List",
-  "description": "基金产品列表展示 - 支持Tab筛选、搜索、排序",
-  "version": "1.0.0",
-  "author": "Fund Team",
-  "icon": "table",
-  "type": "visualization"
-}

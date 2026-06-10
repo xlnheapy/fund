@@ -1,99 +1,84 @@
-# 基金产品列表 - Qlik Sense Extension
+# 基金产品列表
 
-Qlik Sense Extension，用于展示基金产品列表，支持 Tab 分类筛选、搜索、数据表格排序、热门资讯嵌入等功能。
+基于 React + Umi 构建的基金产品列表展示应用。
 
 ## 功能特性
 
-- Tab 分类筛选（全部、股票型、指数型、混合型、债券型、货币型）
-- 关键词搜索（支持基金代码/名称）
-- 数据表格（基金代码、名称、净值日期、单位净值、近一年收益率）
-- 列排序功能（基金代码、单位净值、近一年收益率）
+- 基金类型 Tab 分类导航（全部、股票型、指数型、混合型、债券型、货币型）
+- 基金名称/代码搜索
+- 数据表格（基金代码、单位净值、近一年收益率支持排序）
 - 近一年收益率颜色标识（红涨绿跌）
-- 基金详情链接跳转
-- 热门资讯嵌入（汇丰晋信、东方财富）
+- 热门资讯嵌入区域
+- 开发环境使用 Mock 数据，生产环境对接 Qlik
 
-## 数据来源
+## 技术栈
 
-通过 Qlik HyperCube 查询 `fund_test` 表，字段包括：
-- `fund_name` - 基金简称
-- `fund_code` - 基金代码
-- `fund_type` - 基金类型
-- `nav_date` - 净值日期
-- `nav` - 单位净值
-- `shouyi` - 近一年收益率(%)
-- `fund_url` - 基金详情页链接
+- **框架**: React 18 + Umi 4
+- **语言**: TypeScript 5
+- **数据源**: 开发环境 Mock / 生产环境 Qlik (enigma.js)
+- **样式**: CSS Modules
 
-## 构建
+## 本地开发
 
 ```bash
-npm run build
+# 安装依赖
+npm install
+
+# 启动开发服务器（使用 Mock 数据）
+npm run dev
 ```
 
-构建完成后会在 `dist/` 目录生成：
-- `fund-list/` - Extension 目录
-- `fund-list.zip` - 可上传的 zip 包
+访问 http://localhost:8000
 
-## 上传到 Qlik Sense
+## 生产构建
 
-1. 打开 Qlik Sense Management Console (QMC)
-2. 进入 **Extensions** 管理页面
-3. 点击 **Import** 或 **Upload**
-4. 选择 `dist/fund-list.zip` 文件
-5. 等待上传完成
+```bash
+# 构建
+npm run build
 
-## 使用
+# 产物在 dist/ 目录
+```
 
-1. 在 Qlik Sense 中打开或创建一个 Sheet
-2. 点击 **编辑** 进入编辑模式
-3. 在左侧面板找到 **Fund Product List** 扩展
-4. 拖拽到 Sheet 中
-5. Extension 会自动从 `fund_test` 表加载数据
+### 环境变量配置
+
+创建 `.env.production` 文件：
+
+```bash
+QLIK_WSS_URL=wss://your-qlik-server:4747/app/engineData
+QLIK_APP_ID=your-qlik-app-guid
+```
+
+| 变量名 | 说明 |
+|--------|------|
+| `QLIK_WSS_URL` | Qlik Engine WSS 地址 |
+| `QLIK_APP_ID` | Qlik App 的 GUID |
 
 ## 项目结构
 
 ```
 .
-├── fund-list.qext          # Extension manifest 文件
-├── fund-list.js            # Extension 主逻辑
-├── style.css               # 样式文件
-├── scripts/
-│   └── build-extension.js  # 构建脚本
-└── dist/
-    ├── fund-list/          # 构建产物目录
-    └── fund-list.zip       # 可上传的 zip 包
+├── .umirc.ts              # Umi 配置
+├── tsconfig.json          # TypeScript 配置
+├── package.json           # 依赖配置
+├── mock/
+│   └── funds.ts           # Mock 数据（开发环境）
+├── src/
+│   └── pages/
+│       ├── index.tsx      # 主页面
+│       ├── index.less     # 页面样式
+│       └── api/
+│           └── funds.ts   # API 路由（生产环境对接 Qlik）
+└── dist/                  # 构建产物
 ```
 
-## 开发说明
+## 数据字段
 
-Qlik Sense Extension 使用 AMD 模块规范，主要文件：
-
-- `fund-list.qext` - JSON 格式的 manifest，定义 Extension 名称、描述、版本等
-- `fund-list.js` - 使用 `define()` 定义模块，通过 `paint()` 方法渲染 UI
-- `style.css` - Extension 样式，通过 `text!` 插件加载
-
-数据通过 `initialProperties.qHyperCubeDef` 定义查询字段，Qlik 会自动查询并传入 `layout.qHyperCube.qDataPages[0].qMatrix`。
-
-## 常见问题
-
-### 上传失败
-
-确保 zip 包结构正确：
-```
-fund-list.zip
-└── fund-list/
-    ├── fund-list.qext
-    ├── fund-list.js
-    └── style.css
-```
-
-### 数据显示为空
-
-检查 Qlik App 中是否存在 `fund_test` 表，以及字段名是否匹配。
-
-### 样式不生效
-
-清除浏览器缓存后刷新页面。
-
-## License
-
-MIT
+| 字段 | 说明 |
+|------|------|
+| fund_name | 基金简称 |
+| fund_code | 基金代码 |
+| fund_type | 基金类型 |
+| nav_date | 净值日期 |
+| nav | 单位净值 |
+| shouyi | 近一年收益率 |
+| fund_url | 基金详情链接 |

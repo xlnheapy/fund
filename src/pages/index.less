@@ -1,0 +1,171 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+/* Tab 导航 */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e8e8e8;
+  padding-bottom: 12px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.activeTab {
+  background: #1890ff;
+  color: #fff;
+}
+
+.activeTab:hover {
+  background: #40a9ff;
+  color: #fff;
+}
+
+/* 搜索框 */
+.searchBox {
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  width: 300px;
+  padding: 8px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  border-color: #1890ff;
+}
+
+/* 表格 */
+.tableWrapper {
+  overflow-x: auto;
+  margin-bottom: 32px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  background: #fafafa;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable:hover {
+  background: #f0f0f0;
+}
+
+.td {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.evenRow {
+  background: #fff;
+}
+
+.oddRow {
+  background: #fafafa;
+}
+
+.evenRow:hover,
+.oddRow:hover {
+  background: #f5f5f5;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px 16px;
+  color: #999;
+}
+
+.link {
+  color: #1890ff;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+/* 资讯区域 */
+.newsSection {
+  margin-top: 32px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #1890ff;
+}
+
+.iframeWrapper {
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.iframe {
+  width: 100%;
+  height: 600px;
+  border: none;
+}
