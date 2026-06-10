@@ -7,3 +7,4 @@ dist
 
 # Preview files
 .preview
+.cozeproj/reduction
