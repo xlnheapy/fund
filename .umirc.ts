@@ -1,6 +1,10 @@
 import { defineConfig } from 'umi';
 
 export default defineConfig({
+  // 部署到子路径
+  base: '/fund_portal/',
+  publicPath: '/fund_portal/',
+  
   // 路由配置
   routes: [
     { path: '/', component: '@/pages/index' },
