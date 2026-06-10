@@ -4,3 +4,6 @@ dist
 .umi-production
 .env.local
 .env.*.local
+
+# Preview files
+.preview
