@@ -5,7 +5,7 @@
   "description": "基金产品列表页面 - 支持 Tab 筛选、搜索、数据表格、排序、热门资讯嵌入",
   "scripts": {
     "dev": "next dev --port 5000",
-    "build": "next build && tsx scripts/build-zip.ts",
+    "build": "next build",
     "start": "next start --port 5000",
     "lint:build": "eslint",
     "ts-check": "tsc --noEmit"
