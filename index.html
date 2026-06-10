@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>基金产品列表 - 本地预览</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { margin: 0; padding: 20px; background: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; }
+    .preview-header { background: #1a73e8; color: white; padding: 12px 20px; border-radius: 8px 8px 0 0; margin-bottom: 0; }
+    .preview-header h2 { margin: 0; font-size: 16px; }
+    .preview-header span { font-size: 12px; opacity: 0.8; }
+    #fund-list-extension { border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 8px 8px; background: white; min-height: 600px; }
+  </style>
+</head>
+<body>
+  <div class="preview-header">
+    <h2>基金产品列表 Extension - 本地 Mock 预览</h2>
+    <span>模拟 Qlik Sense 运行环境，数据为 Mock 数据</span>
+  </div>
+  <div id="fund-list-extension"></div>
+
+  <script>
+    // ==========================================
+    // Mock Qlik 运行环境（模拟 Qlik Sense 的 define 和 qlik 对象）
+    // ==========================================
+
+    // Mock 数据（与之前 Next.js 版本一致）
+    var MOCK_DATA = [
+      { fund_name: '汇丰晋信大盘股票A', fund_code: '540006', fund_type: '股票型', nav_date: '2026-06-09', nav: 3.4521, shouyi: 12.35, fund_url: 'https://www.hsbcjt.cn' },
+      { fund_name: '汇丰晋信智造先锋A', fund_code: '002864', fund_type: '股票型', nav_date: '2026-06-09', nav: 2.1834, shouyi: 8.72, fund_url: 'https://www.hsbcjt.cn' },
+      { fund_name: '汇丰晋信恒生A', fund_code: '540002', fund_type: '股票型', nav_date: '2026-06-09', nav: 1.8756, shouyi: -3.21, fund_url: 'https://www.hsbcjt.cn' },
+      { fund_name: '汇丰晋信沪深300指数A', fund_code: '540007', fund_type: '指数型', nav_date: '2026-06-09', nav: 1.5234, shouyi: 5.67, fund_url: 'https://www.hsbcjt.cn' },
+      { fund_name: '汇丰晋信中证500指数A', fund_code: '540008', fund_type: '指数型', nav_date: '2026-06-09', nav: 1.3456, shouyi: -1.89, fund_url: 'https://www.hsbcjt.cn' },
+      { fund_name: '汇丰晋信动态策略混合A', fund_code: '540003', fund_type: '混合型', nav_date: '2026-06-09', nav: 2.8934, shouyi: 6.45, fund_url: 'https://www.hsbcjt.cn' },
+      { fund_name: '汇丰晋信双核策略混合A', fund_code: '540011', fund_type: '混合型', nav_date: '2026-06-09', nav: 1.7623, shouyi: -2.34, fund_url: 'https://www.hsbcjt.cn' },
+      { fund_name: '汇丰晋信短期债券A', fund_code: '540012', fund_type: '债券型', nav_date: '2026-06-09', nav: 1.1234, shouyi: 3.21, fund_url: 'https://www.hsbcjt.cn' },
+      { fund_name: '汇丰晋信货币A', fund_code: '540013', fund_type: '货币型', nav_date: '2026-06-09', nav: 1.0000, shouyi: 1.85, fund_url: 'https://www.hsbcjt.cn' },
+    ];
+
+    // 模拟 Qlik 的 define 函数（AMD 模块加载器）
+    window.define = function(deps, factory) {
+      // 模拟 Qlik 对象
+      var mockQlik = {
+        // 模拟 app 对象
+        getObject: function() { return this; },
+        getApp: function() { return this; },
+        createSessionObject: function(def) {
+          // 模拟 HyperCube 数据
+          var rows = MOCK_DATA.map(function(item) {
+            return {
+              qNum: 0,
+              qText: item.fund_name,
+              qElemNumber: 0,
+              qState: 'S',
+              // 将所有字段值编码到 qText 中
+              _data: item
+            };
+          });
+
+          var matrix = rows.map(function(row, idx) {
+            var item = MOCK_DATA[idx];
+            return [
+              { qText: item.fund_name, qNum: 0, qElemNumber: idx, qState: 'S' },
+              { qText: item.fund_code, qNum: 0, qElemNumber: idx, qState: 'S' },
+              { qText: item.fund_type, qNum: 0, qElemNumber: idx, qState: 'S' },
+              { qText: item.nav_date, qNum: 0, qElemNumber: idx, qState: 'S' },
+              { qText: String(item.nav), qNum: item.nav, qElemNumber: idx, qState: 'S' },
+              { qText: String(item.shouyi), qNum: item.shouyi, qElemNumber: idx, qState: 'S' },
+              { qText: item.fund_url, qNum: 0, qElemNumber: idx, qState: 'S' },
+            ];
+          });
+
+          var layout = {
+            qInfo: { qId: 'mock-object', qType: 'fund-list' },
+            qHyperCube: {
+              qDimensionInfo: def.qHyperCubeDef.qDimensions.map(function(d) {
+                return { qFallbackTitle: d.qDef.qFieldLabels[0] };
+              }),
+              qMeasureInfo: [],
+              qDataPages: [{
+                qMatrix: matrix,
+                qTouched: true,
+                qArea: { qLeft: 0, qTop: 0, qWidth: 7, qHeight: matrix.length }
+              }]
+            },
+            fund_list_config: {
+              news_url: 'https://www.hsbcjt.cn/rmzx/scgd',
+              news_height: 600
+            }
+          };
+
+          // 返回一个带 on 方法的对象
+          var obj = {
+            getLayout: function() {
+              return { then: function(cb) { cb(layout); } };
+            },
+            on: function() { return this; }
+          };
+          return obj;
+        }
+      };
+
+      // 执行 factory，传入模拟的 qlik 对象
+      var ext = factory(mockQlik);
+
+      // 模拟 Qlik 加载 Extension 的过程
+      setTimeout(function() {
+        var container = document.getElementById('fund-list-extension');
+        if (container && ext.paint) {
+          // 模拟 Qlik 调用 paint 方法
+          var mockApp = mockQlik.getApp();
+          ext.paint(container, mockApp);
+        }
+      }, 100);
+    };
+
+    // 模拟 define.amd（Qlik 会检测这个属性）
+    window.define.amd = {};
+  </script>
+
+  <!-- 加载 Extension 主文件 -->
+  <script src="fund-list.js"></script>
+</body>
+</html>

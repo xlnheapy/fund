@@ -5,7 +5,7 @@
   "description": "Qlik Sense Extension - 基金产品列表展示",
   "scripts": {
     "build": "node scripts/build-extension.js",
-    "dev": "echo 'Qlik Extension 不支持本地开发预览，请构建后上传到 Qlik Sense 测试'"
+    "dev": "node scripts/dev-server.js"
   },
   "engines": {
     "node": ">=18"
