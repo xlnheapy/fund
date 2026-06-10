@@ -45,9 +45,9 @@ const isDev = process.env.NODE_ENV === 'development';
  * 生产环境使用 enigma.js 连接 Qlik Engine
  */
 async function fetchFromQlik(): Promise<Fund[]> {
-  // 从环境变量获取 Qlik 连接信息
-  const wssUrl = process.env.QLIK_WSS_URL || '';
-  const appId = process.env.QLIK_APP_ID || '';
+  // 从环境变量获取 Qlik 连接信息（UMI 要求前端环境变量以 UMI_PUBLIC_ 开头）
+  const wssUrl = process.env.UMI_PUBLIC_QLIK_WSS_URL || '';
+  const appId = process.env.UMI_PUBLIC_QLIK_APP_ID || '';
 
   if (!wssUrl || !appId) {
     console.warn('Qlik 配置缺失，使用 mock 数据');
