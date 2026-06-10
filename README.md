@@ -1,141 +1,98 @@
-# 基金产品列表
+# 基金产品列表 - Qlik Sense Extension
 
-基于 Next.js 16 + React 19 + TypeScript 5 的基金产品列表展示系统，支持 Tab 分类筛选、搜索、数据表格排序、热门资讯嵌入等功能。
+Qlik Sense Extension，用于展示基金产品列表，支持 Tab 分类筛选、搜索、数据表格排序、热门资讯嵌入等功能。
 
 ## 功能特性
 
 - Tab 分类筛选（全部、股票型、指数型、混合型、债券型、货币型）
-- 关键词搜索
-- 数据表格（基金代码、名称、净值、收益率等）
-- 列排序功能
+- 关键词搜索（支持基金代码/名称）
+- 数据表格（基金代码、名称、净值日期、单位净值、近一年收益率）
+- 列排序功能（基金代码、单位净值、近一年收益率）
+- 近一年收益率颜色标识（红涨绿跌）
+- 基金详情链接跳转
 - 热门资讯嵌入（汇丰晋信、东方财富）
-- Qlik 数据源对接（enigma.js，开发环境使用 Mock 数据）
-- 响应式设计
 
-## 技术栈
+## 数据来源
 
-- **框架**: Next.js 16 (App Router)
-- **UI**: React 19 + TypeScript 5
-- **样式**: Tailwind CSS v4 + shadcn/ui
-- **数据源**: Qlik Engine API（enigma.js SDK）
-- **开发环境**: Mock 数据（自动切换）
+通过 Qlik HyperCube 查询 `fund_test` 表，字段包括：
+- `fund_name` - 基金简称
+- `fund_code` - 基金代码
+- `fund_type` - 基金类型
+- `nav_date` - 净值日期
+- `nav` - 单位净值
+- `shouyi` - 近一年收益率(%)
+- `fund_url` - 基金详情页链接
 
-## 本地开发
-
-### 1. 安装依赖
-
-```bash
-npm install
-```
-
-### 2. 启动开发服务器
-
-```bash
-npm run dev
-```
-
-访问 http://localhost:5000
-
-> **说明**: 开发环境自动使用 Mock 数据（15 只基金），无需配置 Qlik 连接。
-
-## 生产部署
-
-### 1. 构建并打包
+## 构建
 
 ```bash
 npm run build
 ```
 
 构建完成后会在 `dist/` 目录生成：
-- `fund-product-list.zip` — 完整部署包（包含 .next、public、package.json 等）
+- `fund-list/` - Extension 目录
+- `fund-list.zip` - 可上传的 zip 包
 
-### 2. 部署到服务器
+## 上传到 Qlik Sense
 
-**方式一：使用 zip 包**
+1. 打开 Qlik Sense Management Console (QMC)
+2. 进入 **Extensions** 管理页面
+3. 点击 **Import** 或 **Upload**
+4. 选择 `dist/fund-list.zip` 文件
+5. 等待上传完成
 
-```bash
-unzip dist/fund-product-list.zip -d fund-app
-cd fund-app
-npm install --production
-npm start
-```
+## 使用
 
-**方式二：直接部署**
-
-将以下文件/目录上传到服务器：
-- `.next/` — Next.js 构建产物
-- `public/` — 静态资源
-- `package.json` + `package-lock.json` — 依赖配置
-- `next.config.ts` — Next.js 配置
-
-在服务器上执行：
-```bash
-npm install --production
-npm start
-```
-
-### 3. 环境变量配置
-
-生产环境需要配置 Qlik 连接：
-
-```bash
-# .env.production
-QLIK_WSS_URL=wss://your-qlik-server:4747/app/engineData
-QLIK_APP_ID=your-qlik-app-guid
-```
-
-如果不配置 `QLIK_WSS_URL`，将自动使用 Mock 数据。
-
-## 数据源说明
-
-### 开发环境
-- 自动使用 Mock 数据（15 只基金）
-- 无需配置 Qlik 连接
-
-### 生产环境
-- 通过 enigma.js（Qlik 官方 SDK）连接 Qlik Engine
-- 查询 `fund_test` 表数据
-- 字段：fund_name, fund_code, fund_type, nav, nav_date, shouyi, fund_url
-- 只读查询，不推送数据到 Qlik
-
-### 接入真实 Qlik 步骤
-1. 设置环境变量 `QLIK_WSS_URL` 和 `QLIK_APP_ID`
-2. 确保 Qlik App 中存在 `fund_test` 表
-3. 如果字段名不同，修改 `src/lib/qlik-service.ts` 中 `buildHyperCubeDef()` 的 `qFieldDefs`
+1. 在 Qlik Sense 中打开或创建一个 Sheet
+2. 点击 **编辑** 进入编辑模式
+3. 在左侧面板找到 **Fund Product List** 扩展
+4. 拖拽到 Sheet 中
+5. Extension 会自动从 `fund_test` 表加载数据
 
 ## 项目结构
 
 ```
 .
-├── src/
-│   ├── app/
-│   │   ├── page.tsx              # 主页面（Tab、搜索、表格、资讯）
-│   │   ├── FundTable.tsx         # 基金数据表格组件
-│   │   └── api/
-│   │       └── funds/
-│   │           └── route.ts      # 基金数据 API
-│   ├── lib/
-│   │   └── qlik-service.ts       # Qlik 服务（enigma.js + Mock）
-│   └── components/ui/            # shadcn/ui 组件
-├── public/                       # 静态资源
+├── fund-list.qext          # Extension manifest 文件
+├── fund-list.js            # Extension 主逻辑
+├── style.css               # 样式文件
 ├── scripts/
-│   └── build-zip.ts              # 生产打包脚本
-└── package.json
+│   └── build-extension.js  # 构建脚本
+└── dist/
+    ├── fund-list/          # 构建产物目录
+    └── fund-list.zip       # 可上传的 zip 包
 ```
+
+## 开发说明
+
+Qlik Sense Extension 使用 AMD 模块规范，主要文件：
+
+- `fund-list.qext` - JSON 格式的 manifest，定义 Extension 名称、描述、版本等
+- `fund-list.js` - 使用 `define()` 定义模块，通过 `paint()` 方法渲染 UI
+- `style.css` - Extension 样式，通过 `text!` 插件加载
+
+数据通过 `initialProperties.qHyperCubeDef` 定义查询字段，Qlik 会自动查询并传入 `layout.qHyperCube.qDataPages[0].qMatrix`。
 
 ## 常见问题
 
-### 1. Qlik 连接失败
+### 上传失败
 
-检查环境变量 `QLIK_WSS_URL` 和 `QLIK_APP_ID` 是否正确配置。
+确保 zip 包结构正确：
+```
+fund-list.zip
+└── fund-list/
+    ├── fund-list.qext
+    ├── fund-list.js
+    └── style.css
+```
 
-### 2. 构建失败
+### 数据显示为空
 
-确保 Node.js 版本 >= 18。
+检查 Qlik App 中是否存在 `fund_test` 表，以及字段名是否匹配。
 
-### 3. 数据字段不匹配
+### 样式不生效
 
-修改 `src/lib/qlik-service.ts` 中 `buildHyperCubeDef()` 方法的 `qFieldDefs`，使其与 Qlik App 中的实际字段名一致。
+清除浏览器缓存后刷新页面。
 
 ## License
 

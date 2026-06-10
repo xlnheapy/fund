@@ -1,0 +1,235 @@
+/* ===================================================================
+   Qlik Sense Extension - 基金产品列表样式
+   =================================================================== */
+
+.fund-list-extension {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #1a1a2e;
+  padding: 16px;
+  background: #f8f9fa;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.fund-list-extension * {
+  box-sizing: border-box;
+}
+
+/* ── 头部区域 ── */
+.fund-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.fund-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.fund-search {
+  flex-shrink: 0;
+}
+
+.search-input {
+  width: 260px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ── Tab 导航 ── */
+.fund-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  color: #2563eb;
+}
+
+.tab-btn.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+  font-weight: 500;
+}
+
+/* ── 表格区域 ── */
+.fund-table-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+
+.fund-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.fund-table thead {
+  background: #f9fafb;
+}
+
+.fund-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 500;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.fund-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.fund-table th.sortable:hover {
+  background: #f3f4f6;
+}
+
+.sort-icon {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-left: 4px;
+}
+
+.sort-asc .sort-icon {
+  color: #2563eb;
+}
+
+.sort-asc .sort-icon::after {
+  content: ' ↑';
+}
+
+.sort-desc .sort-icon {
+  color: #2563eb;
+}
+
+.sort-desc .sort-icon::after {
+  content: ' ↓';
+}
+
+.fund-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #4b5563;
+}
+
+.fund-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px 16px !important;
+  color: #9ca3af;
+}
+
+/* ── 收益率颜色（红涨绿跌） ── */
+.positive {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.negative {
+  color: #16a34a;
+  font-weight: 500;
+}
+
+/* ── 基金详情链接 ── */
+.detail-link {
+  color: #2563eb;
+  text-decoration: none;
+  padding: 4px 12px;
+  border: 1px solid #2563eb;
+  border-radius: 4px;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.detail-link:hover {
+  background: #2563eb;
+  color: #fff;
+}
+
+/* ── 资讯区域 ── */
+.news-section {
+  margin-top: 24px;
+}
+
+.news-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0 0 12px 0;
+}
+
+.news-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.news-iframe {
+  width: 100%;
+  height: 400px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+/* ── 响应式 ── */
+@media (max-width: 768px) {
+  .fund-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .fund-table th,
+  .fund-table td {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .news-iframe {
+    height: 300px;
+  }
+}
