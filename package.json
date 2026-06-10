@@ -62,11 +62,9 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/archiver": "^8.0.0",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "archiver": "^8.0.0",
     "eslint": "^9",
     "eslint-config-next": "^16.0.8",
     "tailwindcss": "^4",
