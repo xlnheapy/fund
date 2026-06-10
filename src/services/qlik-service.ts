@@ -112,6 +112,12 @@ async function fetchFromQlik(): Promise<Fund[]> {
     return funds;
   } catch (error) {
     console.error('Qlik 查询失败:', error);
+    console.error('错误详情:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      wssUrl,
+      appId,
+    });
     // 查询失败时返回 mock 数据作为降级
     return MOCK_DATA;
   }
