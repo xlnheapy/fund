@@ -27,7 +27,38 @@ npm run dev:next
 ## 生产构建
 
 ```bash
+# 构建并自动打包成 zip
 npm run build
+
+# 启动生产服务器
+npm start
+```
+
+构建完成后会在 `dist/` 目录生成：
+- `server.js` — 服务器启动文件
+- `fund-product-list.zip` — 完整部署包
+
+### 部署方式
+
+**方式一：直接部署**
+
+将以下文件上传到服务器：
+- `.next/` — Next.js 构建产物
+- `public/` — 静态资源
+- `dist/server.js` — 服务器文件
+- `package.json` + `package-lock.json`
+
+```bash
+npm install --production
+npm start
+```
+
+**方式二：使用 zip 包**
+
+```bash
+unzip dist/fund-product-list.zip -d fund-app
+cd fund-app
+npm install --production
 npm start
 ```
 
@@ -43,7 +74,7 @@ npm start
 
 ## 数据对接
 
-开发环境使用 Mock 数据，生产环境通过 WebSocket (WSS) 对接 Qlik 引擎。
+开发环境使用 Mock 数据，生产环境通过 WebSocket (WSS) 从 Qlik 引擎**查询**数据（只读，不推送）。
 
 详见 `src/lib/qlik-service.ts`
 

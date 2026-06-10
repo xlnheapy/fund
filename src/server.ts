@@ -1,14 +1,14 @@
 /**
  * 自定义 HTTP 服务器（Next.js + WebSocket）
  *   - HTTP + WS 共用端口 5000
- *   - WebSocket 端点：/ws/qlik（Qlik 数据推送）
+ *   - WebSocket 端点：/ws/qlik（从 Qlik 查询数据，只读）
  */
 
 import { createServer } from 'http';
 import { parse } from 'url';
 import next from 'next';
 import { WebSocketServer } from 'ws';
-import { registerQlikHandler } from './ws-handlers/qlik';
+import { setupQlikWsHandler } from './ws-handlers/qlik';
 
 const dev = process.env.NODE_ENV !== 'production';
 const port = parseInt(process.env.PORT || '5000', 10);
@@ -24,7 +24,7 @@ app.prepare().then(() => {
 
   // ── WebSocket 路由 ──
   const qlikWss = new WebSocketServer({ noServer: true });
-  registerQlikHandler(qlikWss);
+  setupQlikWsHandler(qlikWss);
 
   server.on('upgrade', (req, socket, head) => {
     const { pathname } = parse(req.url!);

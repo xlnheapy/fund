@@ -1,8 +1,8 @@
 /**
  * /ws/qlik WebSocket 端点处理器
  *
- * 客户端可通过此 WS 端点实时获取 Qlik 基金数据推送。
- * 当前使用 mock 数据模拟 Qlik 实时推送。
+ * 客户端可通过此 WS 端点从 Qlik 查询基金数据（只读，不推送）。
+ * 开发环境使用 mock 数据模拟 Qlik 查询。
  */
 
 import { WebSocket, type WebSocketServer } from 'ws';
@@ -38,17 +38,6 @@ export function setupQlikWsHandler(wss: WebSocketServer): void {
           }),
         );
         return;
-      }
-
-      // 订阅实时更新（预留 Qlik 推送）
-      if (msg.type === 'funds:subscribe') {
-        // TODO: 在此注册 Qlik 实时推送监听
-        ws.send(
-          JSON.stringify({
-            type: 'funds:subscribed',
-            payload: { message: '已订阅基金数据实时更新' },
-          }),
-        );
       }
     });
 
