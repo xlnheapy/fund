@@ -36,6 +36,9 @@ export default defineConfig({
     { path: '/test', component: '@/pages/test' },
   ],
   
+  // 网站图标 (umi 4.6 不支持 favicon key, 用 links 代替)
+  links: [{ rel: 'icon', href: '/fund_portal/favicon.ico' }],
+  
   // 输出目录
   outputPath: 'dist',
   

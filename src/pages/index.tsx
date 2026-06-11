@@ -13,7 +13,7 @@ const FUND_TYPES = [
 ];
 
 // 排序类型
-type SortField = 'fund_code' | 'nav' | 'shouyi';
+type SortField = 'fund_code' | 'nav' | 'shouyi' | 'three_year_inc';
 type SortOrder = 'asc' | 'desc';
 
 export default function FundList() {
@@ -62,12 +62,17 @@ export default function FundList() {
       );
     }
 
-    // 排序
+    // 排序：重点产品优先，然后按选定字段排序
     filtered.sort((a, b) => {
+      // 重点产品优先
+      if (a.recommend_flag === 'Y' && b.recommend_flag !== 'Y') return -1;
+      if (a.recommend_flag !== 'Y' && b.recommend_flag === 'Y') return 1;
+
+      // 按选定字段排序
       let aVal = a[sortField];
       let bVal = b[sortField];
 
-      if (sortField === 'nav' || sortField === 'shouyi') {
+      if (sortField === 'nav' || sortField === 'shouyi' || sortField === 'three_year_inc') {
         aVal = parseFloat(aVal);
         bVal = parseFloat(bVal);
       }
@@ -101,7 +106,7 @@ export default function FundList() {
   // 格式化收益率（红涨绿跌）
   const formatReturn = (value: string) => {
     const num = parseFloat(value);
-    if (isNaN(num)) return value;
+    if (isNaN(num)) return <span className={styles.returnValue}>{value}</span>;
     
     const color = num > 0 ? '#e74c3c' : num < 0 ? '#27ae60' : '#333';
     const prefix = num > 0 ? '+' : '';
@@ -168,24 +173,37 @@ export default function FundList() {
                 >
                   近一年收益率 {getSortIcon('shouyi')}
                 </th>
+                <th 
+                  className={`${styles.th} ${styles.sortable}`}
+                  onClick={() => handleSort('three_year_inc')}
+                >
+                  近三年收益率 {getSortIcon('three_year_inc')}
+                </th>
                 <th className={styles.th}>基金详情</th>
               </tr>
             </thead>
             <tbody>
               {filteredFunds.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className={styles.empty}>
+                  <td colSpan={7} className={styles.empty}>
                     暂无数据
                   </td>
                 </tr>
               ) : (
-                filteredFunds.map((fund, index) => (
-                  <tr key={fund.fund_code} className={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                    <td className={styles.td}>{fund.fund_name}</td>
+                filteredFunds.map((fund) => (
+                  <tr 
+                    key={fund.fund_code} 
+                    className={fund.recommend_flag === 'Y' ? styles.recommendRow : styles.normalRow}
+                  >
+                    <td className={styles.td}>
+                      {fund.recommend_flag === 'Y' && <span className={styles.star} title="重点产品">⭐ </span>}
+                      {fund.fund_name}
+                    </td>
                     <td className={styles.td}>{fund.fund_code}</td>
                     <td className={styles.td}>{fund.nav_date}</td>
                     <td className={styles.td}>{fund.nav}</td>
                     <td className={styles.td}>{formatReturn(fund.shouyi)}</td>
+                    <td className={styles.td}>{formatReturn(fund.three_year_inc)}</td>
                     <td className={styles.td}>
                       <a
                         href={fund.fund_url}
