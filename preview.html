@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基金产品列表 - 深红色风格预览</title>
+<style>
+  :root {
+    --primary: #8B1A2B;
+    --primary-dark: #6B0F1E;
+    --primary-light: #A52A3A;
+    --gold: #C9A84C;
+    --gold-light: #E8D5A0;
+    --bg: #FBF7F4;
+    --bg-white: #FFFFFF;
+    --text: #2C1810;
+    --text-secondary: #6B5344;
+    --border: #E8D5D0;
+    --green: #1A7A3A;
+    --red: #C41E3A;
+    --star: #D4A017;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* 头部 */
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 12px rgba(139, 26, 43, 0.3);
+  }
+
+  .logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--primary-dark);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .header-title {
+    color: white;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 2px;
+  }
+
+  .header-subtitle {
+    color: var(--gold-light);
+    font-size: 13px;
+    margin-top: 2px;
+    letter-spacing: 1px;
+  }
+
+  /* 主体 */
+  .main {
+    max-width: 1400px;
+    margin: 24px auto;
+    padding: 0 24px;
+  }
+
+  /* 搜索栏 */
+  .search-bar {
+    background: var(--bg-white);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+
+  .search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 16px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    outline: none;
+    background: var(--bg);
+  }
+
+  .search-input:focus {
+    border-color: var(--primary);
+  }
+
+  /* Tab 导航 */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    background: var(--bg-white);
+    border-radius: 12px;
+    padding: 6px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+
+  .tab {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    background: transparent;
+    color: var(--text-secondary);
+  }
+
+  .tab:hover {
+    background: var(--bg);
+    color: var(--primary);
+  }
+
+  .tab.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 2px 6px rgba(139, 26, 43, 0.3);
+  }
+
+  .tab-count {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  /* 表格 */
+  .table-card {
+    background: var(--bg-white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+
+  thead th.sortable {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  thead th.sortable:hover {
+    background: linear-gradient(180deg, var(--primary-light) 0%, var(--primary) 100%);
+  }
+
+  .sort-icon {
+    font-size: 11px;
+    margin-left: 4px;
+    opacity: 0.6;
+  }
+
+  tbody td {
+    padding: 14px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tbody tr:hover {
+    background: #FDF5F5;
+  }
+
+  tbody tr:nth-child(even) {
+    background: #FDF8F6;
+  }
+
+  tbody tr:nth-child(even):hover {
+    background: #FDF5F5;
+  }
+
+  /* 重点产品（星标行） */
+  tbody tr.starred {
+    background: linear-gradient(90deg, #FFF8E7 0%, #FDF8F6 100%);
+    border-left: 3px solid var(--star);
+  }
+
+  tbody tr.starred:hover {
+    background: linear-gradient(90deg, #FFF3D4 0%, #FDF5F5 100%);
+  }
+
+  .star-icon {
+    color: var(--star);
+    font-size: 16px;
+    margin-right: 6px;
+    filter: drop-shadow(0 1px 2px rgba(212, 160, 23, 0.4));
+  }
+
+  .fund-name {
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .fund-code {
+    color: var(--text-secondary);
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 12px;
+  }
+
+  /* 收益率颜色 */
+  .return-up {
+    color: var(--red);
+    font-weight: 600;
+  }
+
+  .return-down {
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .return-up::before { content: '+'; }
+  .return-down::before { content: ''; }
+
+  /* 详情按钮 */
+  .btn-detail {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--primary);
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-detail:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 2px 6px rgba(139, 26, 43, 0.3);
+  }
+
+  /* 资讯区 */
+  .news-card {
+    background: var(--bg-white);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+
+  .news-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .news-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background: var(--gold);
+    border-radius: 2px;
+  }
+
+  .news-iframe {
+    width: 100%;
+    height: 300px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+  }
+
+  /* 状态标签 */
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .status-open {
+    background: #E8F5E9;
+    color: #2E7D32;
+  }
+
+  /* 页脚 */
+  .footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 24px;
+  }
+</style>
+</head>
+<body>
+
+<!-- 头部 -->
+<div class="header">
+  <div class="logo">基</div>
+  <div>
+    <div class="header-title">基金产品列表</div>
+    <div class="header-subtitle">FUND PRODUCT LIST</div>
+  </div>
+</div>
+
+<!-- 主体 -->
+<div class="main">
+
+  <!-- 搜索 -->
+  <div class="search-bar">
+    <input class="search-input" type="text" placeholder="🔍  搜索基金简称或代码...">
+  </div>
+
+  <!-- Tab -->
+  <div class="tabs">
+    <button class="tab active">全部<span class="tab-count">15</span></button>
+    <button class="tab">股票型<span class="tab-count">6</span></button>
+    <button class="tab">指数型<span class="tab-count">1</span></button>
+    <button class="tab">混合型<span class="tab-count">4</span></button>
+    <button class="tab">债券型<span class="tab-count">2</span></button>
+    <button class="tab">货币型<span class="tab-count">2</span></button>
+  </div>
+
+  <!-- 表格 -->
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">基金简称</th>
+          <th class="sortable" style="width:10%">基金代码 <span class="sort-icon">↕</span></th>
+          <th style="width:12%">净值日期</th>
+          <th class="sortable" style="width:10%">单位净值 <span class="sort-icon">↕</span></th>
+          <th class="sortable" style="width:12%">近一年收益 <span class="sort-icon">↕</span></th>
+          <th class="sortable" style="width:12%">近三年收益 <span class="sort-icon">↕</span></th>
+          <th style="width:16%">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 重点产品 - 星标行 -->
+        <tr class="starred">
+          <td><span class="star-icon">⭐</span><span class="fund-name">汇丰晋信大盘股票A</span></td>
+          <td><span class="fund-code">540006</span></td>
+          <td>2024-01-15</td>
+          <td>3.2450</td>
+          <td class="return-up">12.56%</td>
+          <td class="return-up">35.80%</td>
+          <td><a href="#" class="btn-detail">查看详情</a></td>
+        </tr>
+        <tr class="starred">
+          <td><span class="star-icon">⭐</span><span class="fund-name">汇丰晋信低碳先锋股票A</span></td>
+          <td><span class="fund-code">540008</span></td>
+          <td>2024-01-15</td>
+          <td>2.1340</td>
+          <td class="return-up">15.67%</td>
+          <td class="return-up">42.30%</td>
+          <td><a href="#" class="btn-detail">查看详情</a></td>
+        </tr>
+        <tr class="starred">
+          <td><span class="star-icon">⭐</span><span class="fund-name">汇丰晋信科技先锋股票A</span></td>
+          <td><span class="fund-code">540010</span></td>
+          <td>2024-01-15</td>
+          <td>2.5430</td>
+          <td class="return-up">22.18%</td>
+          <td class="return-up">58.45%</td>
+          <td><a href="#" class="btn-detail">查看详情</a></td>
+        </tr>
+        <!-- 普通产品 -->
+        <tr>
+          <td><span class="fund-name">汇丰晋信动态策略混合A</span></td>
+          <td><span class="fund-code">540003</span></td>
+          <td>2024-01-15</td>
+          <td>2.8760</td>
+          <td class="return-up">8.32%</td>
+          <td class="return-up">18.90%</td>
+          <td><a href="#" class="btn-detail">查看详情</a></td>
+        </tr>
+        <tr>
+          <td><span class="fund-name">汇丰晋信2026周期混合</span></td>
+          <td><span class="fund-code">540007</span></td>
+          <td>2024-01-15</td>
+          <td>1.9540</td>
+          <td class="return-down">-3.21%</td>
+          <td class="return-down">-1.50%</td>
+          <td><a href="#" class="btn-detail">查看详情</a></td>
+        </tr>
+        <tr>
+          <td><span class="fund-name">汇丰晋信货币基金A</span></td>
+          <td><span class="fund-code">540001</span></td>
+          <td>2024-01-15</td>
+          <td>1.0000</td>
+          <td class="return-up">1.85%</td>
+          <td class="return-up">5.60%</td>
+          <td><a href="#" class="btn-detail">查看详情</a></td>
+        </tr>
+        <tr>
+          <td><span class="fund-name">汇丰晋信消费红利股票A</span></td>
+          <td><span class="fund-code">540009</span></td>
+          <td>2024-01-15</td>
+          <td>1.8760</td>
+          <td class="return-down">-5.43%</td>
+          <td class="return-down">-8.20%</td>
+          <td><a href="#" class="btn-detail">查看详情</a></td>
+        </tr>
+        <tr>
+          <td><span class="fund-name">汇丰晋信中小盘股票A</span></td>
+          <td><span class="fund-code">540011</span></td>
+          <td>2024-01-15</td>
+          <td>2.0870</td>
+          <td class="return-up">6.75%</td>
+          <td class="return-up">15.30%</td>
+          <td><a href="#" class="btn-detail">查看详情</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 资讯 -->
+  <div class="news-card">
+    <div class="news-title">热门资讯</div>
+    <iframe class="news-iframe" src="https://www.hsbcjt.cn/rmzx/scgd"></iframe>
+  </div>
+
+</div>
+
+<div class="footer">© 2024 Fund Product List. All rights reserved.</div>
+
+</body>
+</html>
