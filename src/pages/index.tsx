@@ -190,10 +190,10 @@ export default function FundList() {
                   </td>
                 </tr>
               ) : (
-                filteredFunds.map((fund) => (
+                filteredFunds.map((fund, index) => (
                   <tr 
                     key={fund.fund_code} 
-                    className={fund.recommend_flag === 'Y' ? styles.recommendRow : styles.normalRow}
+                    className={fund.recommend_flag === 'Y' ? styles.recommendRow : (index % 2 === 0 ? styles.evenRow : styles.oddRow)}
                   >
                     <td className={styles.td}>
                       {fund.recommend_flag === 'Y' && <span className={styles.star} title="重点产品">⭐ </span>}
