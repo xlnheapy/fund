@@ -24,6 +24,8 @@ export default function FundList() {
   const [sortField, setSortField] = useState<SortField>('fund_code');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   // 加载数据
   useEffect(() => {
@@ -85,7 +87,36 @@ export default function FundList() {
     });
 
     setFilteredFunds(filtered);
+    setCurrentPage(1); // 过滤条件变化时重置到第一页
   }, [funds, activeTab, searchKeyword, sortField, sortOrder]);
+
+  // 分页数据
+  const totalPages = Math.ceil(filteredFunds.length / pageSize);
+  const paginatedFunds = filteredFunds.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  // 页码变化
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
+  // 生成页码列表
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+    if (start > 1) pages.push(1, '...');
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (end < totalPages) pages.push('...', totalPages);
+    return pages;
+  };
 
   // 切换排序
   const handleSort = (field: SortField) => {
@@ -190,7 +221,7 @@ export default function FundList() {
                   </td>
                 </tr>
               ) : (
-                filteredFunds.map((fund, index) => (
+                paginatedFunds.map((fund, index) => (
                   <tr 
                     key={fund.fund_code} 
                     className={fund.recommend_flag === 'Y' ? styles.recommendRow : (index % 2 === 0 ? styles.evenRow : styles.oddRow)}
@@ -221,6 +252,61 @@ export default function FundList() {
           </table>
         )}
       </div>
+
+      {/* 分页 */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <span className={styles.pageInfo}>共 {filteredFunds.length} 条，{totalPages} 页</span>
+          <div className={styles.pageButtons}>
+            <button
+              className={styles.pageBtn}
+              onClick={() => setPage(1)}
+              disabled={page === 1}
+            >
+              首页
+            </button>
+            <button
+              className={styles.pageBtn}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              上一页
+            </button>
+            {getPageNumbers().map(n => (
+              <button
+                key={n}
+                className={`${styles.pageBtn} ${n === page ? styles.pageBtnActive : ''}`}
+                onClick={() => setPage(n)}
+              >
+                {n}
+              </button>
+            ))}
+            <button
+              className={styles.pageBtn}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+            >
+              下一页
+            </button>
+            <button
+              className={styles.pageBtn}
+              onClick={() => setPage(totalPages)}
+              disabled={page === totalPages}
+            >
+              末页
+            </button>
+          </div>
+          <select
+            className={styles.pageSizeSelect}
+            value={pageSize}
+            onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
+          >
+            <option value={10}>10条/页</option>
+            <option value={20}>20条/页</option>
+            <option value={50}>50条/页</option>
+          </select>
+        </div>
+      )}
 
       {/* 资讯嵌入区域 */}
       <div className={styles.newsSection}>
