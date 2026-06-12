@@ -17,26 +17,27 @@ export interface Fund {
   shouyi: string;
   three_year_inc: string;
   recommend_flag: string;
+  purchase_flag: string;
   fund_url: string;
 }
 
 // Mock 数据（开发环境使用）
 const MOCK_DATA: Fund[] = [
-  { fund_name: '汇丰晋信大盘股票A', fund_code: '540006', fund_type: '股票型', nav_date: '2024-01-15', nav: '3.2450', shouyi: '12.56', three_year_inc: '28.45', recommend_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540006' },
-  { fund_name: '汇丰晋信动态策略混合A', fund_code: '540003', fund_type: '混合型', nav_date: '2024-01-15', nav: '2.8760', shouyi: '8.32', three_year_inc: '15.67', recommend_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540003' },
-  { fund_name: '汇丰晋信2026周期混合', fund_code: '540007', fund_type: '混合型', nav_date: '2024-01-15', nav: '1.9540', shouyi: '-3.21', three_year_inc: '5.43', recommend_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540007' },
-  { fund_name: '汇丰晋信货币基金A', fund_code: '540001', fund_type: '货币型', nav_date: '2024-01-15', nav: '1.0000', shouyi: '1.85', three_year_inc: '5.62', recommend_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540001' },
-  { fund_name: '汇丰晋信低碳先锋股票A', fund_code: '540008', fund_type: '股票型', nav_date: '2024-01-15', nav: '2.1340', shouyi: '15.67', three_year_inc: '35.21', recommend_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540008' },
-  { fund_name: '汇丰晋信消费红利股票A', fund_code: '540009', fund_type: '股票型', nav_date: '2024-01-15', nav: '1.8760', shouyi: '-5.43', three_year_inc: '-8.92', recommend_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540009' },
-  { fund_name: '汇丰晋信科技先锋股票A', fund_code: '540010', fund_type: '股票型', nav_date: '2024-01-15', nav: '2.5430', shouyi: '22.18', three_year_inc: '42.56', recommend_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540010' },
-  { fund_name: '汇丰晋信中小盘股票A', fund_code: '540011', fund_type: '股票型', nav_date: '2024-01-15', nav: '2.0870', shouyi: '6.75', three_year_inc: '12.34', recommend_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540011' },
-  { fund_name: '汇丰晋信龙腾混合型', fund_code: '540002', fund_type: '混合型', nav_date: '2024-01-15', nav: '3.1230', shouyi: '9.87', three_year_inc: '18.90', recommend_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540002' },
-  { fund_name: '汇丰晋信平稳增利债券A', fund_code: '540004', fund_type: '债券型', nav_date: '2024-01-15', nav: '1.2340', shouyi: '3.45', three_year_inc: '8.76', recommend_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540004' },
-  { fund_name: '汇丰晋信恒生A股行业龙头指数A', fund_code: '540012', fund_type: '指数型', nav_date: '2024-01-15', nav: '1.4560', shouyi: '-2.34', three_year_inc: '-4.56', recommend_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540012' },
-  { fund_name: '汇丰晋信大盘波动股票A', fund_code: '540013', fund_type: '股票型', nav_date: '2024-01-15', nav: '1.7650', shouyi: '11.23', three_year_inc: '22.15', recommend_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540013' },
-  { fund_name: '汇丰晋信双核策略混合A', fund_code: '540015', fund_type: '混合型', nav_date: '2024-01-15', nav: '1.5430', shouyi: '-1.56', three_year_inc: '3.21', recommend_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540015' },
-  { fund_name: '汇丰晋信珠三角债券A', fund_code: '540014', fund_type: '债券型', nav_date: '2024-01-15', nav: '1.1230', shouyi: '4.12', three_year_inc: '9.87', recommend_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540014' },
-  { fund_name: '汇丰晋信慧生活货币A', fund_code: '540016', fund_type: '货币型', nav_date: '2024-01-15', nav: '1.0000', shouyi: '2.15', three_year_inc: '6.54', recommend_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540016' },
+  { fund_name: '汇丰晋信大盘股票A', fund_code: '540006', fund_type: '股票型', nav_date: '2024-01-15', nav: '3.2450', shouyi: '12.56', three_year_inc: '28.45', recommend_flag: 'Y', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540006' },
+  { fund_name: '汇丰晋信动态策略混合A', fund_code: '540003', fund_type: '混合型', nav_date: '2024-01-15', nav: '2.8760', shouyi: '8.32', three_year_inc: '15.67', recommend_flag: 'N', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540003' },
+  { fund_name: '汇丰晋信2026周期混合', fund_code: '540007', fund_type: '混合型', nav_date: '2024-01-15', nav: '1.9540', shouyi: '-3.21', three_year_inc: '5.43', recommend_flag: 'N', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540007' },
+  { fund_name: '汇丰晋信货币基金A', fund_code: '540001', fund_type: '货币型', nav_date: '2024-01-15', nav: '1.0000', shouyi: '1.85', three_year_inc: '5.62', recommend_flag: 'N', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540001' },
+  { fund_name: '汇丰晋信低碳先锋股票A', fund_code: '540008', fund_type: '股票型', nav_date: '2024-01-15', nav: '2.1340', shouyi: '15.67', three_year_inc: '35.21', recommend_flag: 'Y', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540008' },
+  { fund_name: '汇丰晋信消费红利股票A', fund_code: '540009', fund_type: '股票型', nav_date: '2024-01-15', nav: '1.8760', shouyi: '-5.43', three_year_inc: '-8.92', recommend_flag: 'N', purchase_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540009' },
+  { fund_name: '汇丰晋信科技先锋股票A', fund_code: '540010', fund_type: '股票型', nav_date: '2024-01-15', nav: '2.5430', shouyi: '22.18', three_year_inc: '42.56', recommend_flag: 'Y', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540010' },
+  { fund_name: '汇丰晋信中小盘股票A', fund_code: '540011', fund_type: '股票型', nav_date: '2024-01-15', nav: '2.0870', shouyi: '6.75', three_year_inc: '12.34', recommend_flag: 'N', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540011' },
+  { fund_name: '汇丰晋信龙腾混合型', fund_code: '540002', fund_type: '混合型', nav_date: '2024-01-15', nav: '3.1230', shouyi: '9.87', three_year_inc: '18.90', recommend_flag: 'N', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540002' },
+  { fund_name: '汇丰晋信平稳增利债券A', fund_code: '540004', fund_type: '债券型', nav_date: '2024-01-15', nav: '1.2340', shouyi: '3.45', three_year_inc: '8.76', recommend_flag: 'N', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540004' },
+  { fund_name: '汇丰晋信恒生A股行业龙头指数A', fund_code: '540012', fund_type: '指数型', nav_date: '2024-01-15', nav: '1.4560', shouyi: '-2.34', three_year_inc: '-4.56', recommend_flag: 'N', purchase_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540012' },
+  { fund_name: '汇丰晋信大盘波动股票A', fund_code: '540013', fund_type: '股票型', nav_date: '2024-01-15', nav: '1.7650', shouyi: '11.23', three_year_inc: '22.15', recommend_flag: 'Y', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540013' },
+  { fund_name: '汇丰晋信双核策略混合A', fund_code: '540015', fund_type: '混合型', nav_date: '2024-01-15', nav: '1.5430', shouyi: '-1.56', three_year_inc: '3.21', recommend_flag: 'N', purchase_flag: 'N', fund_url: 'https://www.hsbcjt.cn/fund/540015' },
+  { fund_name: '汇丰晋信珠三角债券A', fund_code: '540014', fund_type: '债券型', nav_date: '2024-01-15', nav: '1.1230', shouyi: '4.12', three_year_inc: '9.87', recommend_flag: 'N', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540014' },
+  { fund_name: '汇丰晋信慧生活货币A', fund_code: '540016', fund_type: '货币型', nav_date: '2024-01-15', nav: '1.0000', shouyi: '2.15', three_year_inc: '6.54', recommend_flag: 'N', purchase_flag: 'Y', fund_url: 'https://www.hsbcjt.cn/fund/540016' },
 ];
 
 // 判断是否为开发环境
@@ -82,10 +83,11 @@ async function fetchFromQlik(): Promise<Fund[]> {
           { qDef: { qFieldDefs: ['shouyi'], qFieldLabels: ['近一年收益率'] } },
           { qDef: { qFieldDefs: ['three_year_inc'], qFieldLabels: ['近三年收益率'] } },
           { qDef: { qFieldDefs: ['recommend_flag'], qFieldLabels: ['重点产品标志'] } },
+          { qDef: { qFieldDefs: ['purchase_flag'], qFieldLabels: ['是否可购买'] } },
           { qDef: { qFieldDefs: ['fund_url'], qFieldLabels: ['基金详情链接'] } },
         ],
         qMeasures: [],
-        qInitialDataFetch: [{ qTop: 0, qLeft: 0, qWidth: 9, qHeight: 1000 }],
+        qInitialDataFetch: [{ qTop: 0, qLeft: 0, qWidth: 10, qHeight: 1000 }],
       },
     });
 
@@ -105,7 +107,8 @@ async function fetchFromQlik(): Promise<Fund[]> {
       shouyi: String(row[5]?.qText || ''),
       three_year_inc: String(row[6]?.qText || ''),
       recommend_flag: String(row[7]?.qText || 'N'),
-      fund_url: String(row[8]?.qText || ''),
+      purchase_flag: String(row[8]?.qText || 'N'),
+      fund_url: String(row[9]?.qText || ''),
     }));
 
     await session.close();

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Input, Tabs, ConfigProvider, Spin } from 'antd';
+import { Table, Input, Tabs, ConfigProvider, Spin, Checkbox } from 'antd';
+import { StarFilled } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import styles from './index.less';
 import { getFunds, Fund } from '@/services/qlik-service';
@@ -23,16 +24,36 @@ const formatReturn = (value: string) => {
   return <span style={{ color, fontWeight: 500 }}>{prefix}{num.toFixed(2)}%</span>;
 };
 
+// NaN 排在最后的排序辅助函数
+const sortWithNaNLast = (aVal: string, bVal: string) => {
+  const aNum = parseFloat(aVal);
+  const bNum = parseFloat(bVal);
+  if (isNaN(aNum) && isNaN(bNum)) return 0;
+  if (isNaN(aNum)) return 1;
+  if (isNaN(bNum)) return -1;
+  return aNum - bNum;
+};
+
 const columns: ColumnsType<Fund> = [
   {
     title: '基金简称',
     dataIndex: 'fund_name',
     key: 'fund_name',
     render: (text: string, record: Fund) => (
-      <>
-        {record.recommend_flag === 'Y' && <span style={{ color: '#faad14', marginRight: 4 }}>⭐</span>}
+      <span style={{ position: 'relative', display: 'inline-block' }}>
         {text}
-      </>
+        {record.recommend_flag === 'Y' && (
+          <StarFilled
+            style={{
+              color: '#faad14',
+              fontSize: 12,
+              position: 'absolute',
+              top: -6,
+              right: -14,
+            }}
+          />
+        )}
+      </span>
     ),
   },
   {
@@ -50,20 +71,20 @@ const columns: ColumnsType<Fund> = [
     title: '单位净值',
     dataIndex: 'nav',
     key: 'nav',
-    sorter: (a, b) => parseFloat(a.nav) - parseFloat(b.nav),
+    sorter: (a, b) => sortWithNaNLast(a.nav, b.nav),
   },
   {
     title: '近一年收益率',
     dataIndex: 'shouyi',
     key: 'shouyi',
-    sorter: (a, b) => parseFloat(a.shouyi) - parseFloat(b.shouyi),
+    sorter: (a, b) => sortWithNaNLast(a.shouyi, b.shouyi),
     render: (value: string) => formatReturn(value),
   },
   {
     title: '近三年收益率',
     dataIndex: 'three_year_inc',
     key: 'three_year_inc',
-    sorter: (a, b) => parseFloat(a.three_year_inc) - parseFloat(b.three_year_inc),
+    sorter: (a, b) => sortWithNaNLast(a.three_year_inc, b.three_year_inc),
     render: (value: string) => formatReturn(value),
   },
   {
@@ -81,6 +102,7 @@ export default function FundList() {
   const [funds, setFunds] = useState<Fund[]>([]);
   const [activeTab, setActiveTab] = useState('all');
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [purchaseOnly, setPurchaseOnly] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // 加载数据
@@ -120,12 +142,10 @@ export default function FundList() {
           fund.fund_code.includes(keyword)
       );
     }
+    if (purchaseOnly) {
+      filtered = filtered.filter(fund => fund.purchase_flag === 'Y');
+    }
     return filtered;
-  };
-
-  // 行样式
-  const rowClassName = (record: Fund) => {
-    return record.recommend_flag === 'Y' ? styles.recommendRow : '';
   };
 
   return (
@@ -155,8 +175,8 @@ export default function FundList() {
           ))}
         </div>
 
-        {/* 搜索框 */}
-        <div className={styles.searchBox}>
+        {/* 搜索框 + 可购买筛选 */}
+        <div className={styles.searchRow}>
           <Input
             placeholder="搜索基金名称或代码"
             value={searchKeyword}
@@ -164,6 +184,12 @@ export default function FundList() {
             style={{ width: 300 }}
             allowClear
           />
+          <Checkbox
+            checked={purchaseOnly}
+            onChange={(e) => setPurchaseOnly(e.target.checked)}
+          >
+            仅显示可购买
+          </Checkbox>
         </div>
 
         {/* 数据表格 */}
@@ -172,7 +198,6 @@ export default function FundList() {
             columns={columns}
             dataSource={getFilteredFunds()}
             rowKey="fund_code"
-            rowClassName={rowClassName}
             pagination={{
               showSizeChanger: true,
               showQuickJumper: true,
