@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Table, Input, Tabs, ConfigProvider, Spin } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import styles from './index.less';
 import { getFunds, Fund } from '@/services/qlik-service';
 
@@ -12,31 +14,90 @@ const FUND_TYPES = [
   { key: '货币型', label: '货币型' },
 ];
 
-// 排序类型
-type SortField = 'fund_code' | 'nav' | 'shouyi' | 'three_year_inc';
-type SortOrder = 'asc' | 'desc';
+// 格式化收益率
+const formatReturn = (value: string) => {
+  const num = parseFloat(value);
+  if (isNaN(num)) return <span>{value}</span>;
+  const color = num > 0 ? '#e74c3c' : num < 0 ? '#27ae60' : '#333';
+  const prefix = num > 0 ? '+' : '';
+  return <span style={{ color, fontWeight: 500 }}>{prefix}{num.toFixed(2)}%</span>;
+};
+
+const columns: ColumnsType<Fund> = [
+  {
+    title: '基金简称',
+    dataIndex: 'fund_name',
+    key: 'fund_name',
+    render: (text: string, record: Fund) => (
+      <>
+        {record.recommend_flag === 'Y' && <span style={{ color: '#faad14', marginRight: 4 }}>⭐</span>}
+        {text}
+      </>
+    ),
+  },
+  {
+    title: '基金代码',
+    dataIndex: 'fund_code',
+    key: 'fund_code',
+    sorter: (a, b) => a.fund_code.localeCompare(b.fund_code),
+  },
+  {
+    title: '净值日期',
+    dataIndex: 'nav_date',
+    key: 'nav_date',
+  },
+  {
+    title: '单位净值',
+    dataIndex: 'nav',
+    key: 'nav',
+    sorter: (a, b) => parseFloat(a.nav) - parseFloat(b.nav),
+  },
+  {
+    title: '近一年收益率',
+    dataIndex: 'shouyi',
+    key: 'shouyi',
+    sorter: (a, b) => parseFloat(a.shouyi) - parseFloat(b.shouyi),
+    render: (value: string) => formatReturn(value),
+  },
+  {
+    title: '近三年收益率',
+    dataIndex: 'three_year_inc',
+    key: 'three_year_inc',
+    sorter: (a, b) => parseFloat(a.three_year_inc) - parseFloat(b.three_year_inc),
+    render: (value: string) => formatReturn(value),
+  },
+  {
+    title: '基金详情',
+    key: 'action',
+    render: (_: any, record: Fund) => (
+      <a href={record.fund_url} target="_blank" rel="noopener noreferrer" className={styles.link}>
+        查看
+      </a>
+    ),
+  },
+];
 
 export default function FundList() {
   const [funds, setFunds] = useState<Fund[]>([]);
-  const [filteredFunds, setFilteredFunds] = useState<Fund[]>([]);
   const [activeTab, setActiveTab] = useState('all');
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [sortField, setSortField] = useState<SortField>('fund_code');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
 
   // 加载数据
   useEffect(() => {
     fetchFunds();
   }, []);
 
-  // 获取基金数据
   const fetchFunds = async () => {
     try {
       setLoading(true);
       const data = await getFunds();
+      // 重点产品排在前面
+      data.sort((a, b) => {
+        if (a.recommend_flag === 'Y' && b.recommend_flag !== 'Y') return -1;
+        if (a.recommend_flag !== 'Y' && b.recommend_flag === 'Y') return 1;
+        return 0;
+      });
       setFunds(data);
     } catch (error) {
       console.error('获取基金数据失败:', error);
@@ -45,16 +106,12 @@ export default function FundList() {
     }
   };
 
-  // 过滤和搜索
-  useEffect(() => {
+  // 过滤数据
+  const getFilteredFunds = () => {
     let filtered = [...funds];
-
-    // Tab 过滤
     if (activeTab !== 'all') {
       filtered = filtered.filter(fund => fund.fund_type === activeTab);
     }
-
-    // 搜索过滤
     if (searchKeyword) {
       const keyword = searchKeyword.toLowerCase();
       filtered = filtered.filter(
@@ -63,275 +120,96 @@ export default function FundList() {
           fund.fund_code.includes(keyword)
       );
     }
-
-    // 排序：重点产品优先，然后按选定字段排序
-    filtered.sort((a, b) => {
-      // 重点产品优先
-      if (a.recommend_flag === 'Y' && b.recommend_flag !== 'Y') return -1;
-      if (a.recommend_flag !== 'Y' && b.recommend_flag === 'Y') return 1;
-
-      // 按选定字段排序
-      let aVal = a[sortField];
-      let bVal = b[sortField];
-
-      if (sortField === 'nav' || sortField === 'shouyi' || sortField === 'three_year_inc') {
-        aVal = parseFloat(aVal);
-        bVal = parseFloat(bVal);
-      }
-
-      if (sortOrder === 'asc') {
-        return aVal > bVal ? 1 : -1;
-      } else {
-        return aVal < bVal ? 1 : -1;
-      }
-    });
-
-    setFilteredFunds(filtered);
-    setCurrentPage(1); // 过滤条件变化时重置到第一页
-  }, [funds, activeTab, searchKeyword, sortField, sortOrder]);
-
-  // 分页数据
-  const totalPages = Math.ceil(filteredFunds.length / pageSize);
-  const paginatedFunds = filteredFunds.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  // 页码变化
-  const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
+    return filtered;
   };
 
-  // 生成页码列表
-  const getPageNumbers = () => {
-    const pages: (number | string)[] = [];
-    const maxVisible = 5;
-    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-    let end = Math.min(totalPages, start + maxVisible - 1);
-    if (end - start + 1 < maxVisible) {
-      start = Math.max(1, end - maxVisible + 1);
-    }
-    if (start > 1) pages.push(1, '...');
-    for (let i = start; i <= end; i++) pages.push(i);
-    if (end < totalPages) pages.push('...', totalPages);
-    return pages;
-  };
-
-  // 切换排序
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
-
-  // 获取排序图标
-  const getSortIcon = (field: SortField) => {
-    if (sortField !== field) return '↕';
-    return sortOrder === 'asc' ? '↑' : '↓';
-  };
-
-  // 格式化收益率（红涨绿跌）
-  const formatReturn = (value: string) => {
-    const num = parseFloat(value);
-    if (isNaN(num)) return <span className={styles.returnValue}>{value}</span>;
-    
-    const color = num > 0 ? '#e74c3c' : num < 0 ? '#27ae60' : '#333';
-    const prefix = num > 0 ? '+' : '';
-    
-    return <span style={{ color, fontWeight: 500 }}>{prefix}{num.toFixed(2)}%</span>;
+  // 行样式
+  const rowClassName = (record: Fund) => {
+    return record.recommend_flag === 'Y' ? styles.recommendRow : '';
   };
 
   return (
-    <div className={styles.container}>
-      {/* 页面标题 */}
-      <div className={styles.header}>
-        <h1 className={styles.title}>基金产品列表</h1>
-      </div>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#1890ff',
+        },
+      }}
+    >
+      <div className={styles.container}>
+        {/* 页面标题 */}
+        <div className={styles.header}>
+          <h1 className={styles.title}>基金产品列表</h1>
+        </div>
 
-      {/* Tab 导航 */}
-      <div className={styles.tabs}>
-        {FUND_TYPES.map(tab => (
-          <button
-            key={tab.key}
-            className={`${styles.tab} ${activeTab === tab.key ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab(tab.key)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+        {/* Tab 导航 */}
+        <div className={styles.tabs}>
+          {FUND_TYPES.map(tab => (
+            <button
+              key={tab.key}
+              className={`${styles.tab} ${activeTab === tab.key ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab(tab.key)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-      {/* 搜索框 */}
-      <div className={styles.searchBox}>
-        <input
-          type="text"
-          placeholder="搜索基金名称或代码"
-          value={searchKeyword}
-          onChange={(e) => setSearchKeyword(e.target.value)}
-          className={styles.searchInput}
-        />
-      </div>
+        {/* 搜索框 */}
+        <div className={styles.searchBox}>
+          <Input
+            placeholder="搜索基金名称或代码"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            style={{ width: 300 }}
+            allowClear
+          />
+        </div>
 
-      {/* 数据表格 */}
-      <div className={styles.tableWrapper}>
-        {loading ? (
-          <div className={styles.loading}>加载中...</div>
-        ) : (
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th className={styles.th}>基金简称</th>
-                <th 
-                  className={`${styles.th} ${styles.sortable}`}
-                  onClick={() => handleSort('fund_code')}
-                >
-                  基金代码 {getSortIcon('fund_code')}
-                </th>
-                <th className={styles.th}>净值日期</th>
-                <th 
-                  className={`${styles.th} ${styles.sortable}`}
-                  onClick={() => handleSort('nav')}
-                >
-                  单位净值 {getSortIcon('nav')}
-                </th>
-                <th 
-                  className={`${styles.th} ${styles.sortable}`}
-                  onClick={() => handleSort('shouyi')}
-                >
-                  近一年收益率 {getSortIcon('shouyi')}
-                </th>
-                <th 
-                  className={`${styles.th} ${styles.sortable}`}
-                  onClick={() => handleSort('three_year_inc')}
-                >
-                  近三年收益率 {getSortIcon('three_year_inc')}
-                </th>
-                <th className={styles.th}>基金详情</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredFunds.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className={styles.empty}>
-                    暂无数据
-                  </td>
-                </tr>
-              ) : (
-                paginatedFunds.map((fund, index) => (
-                  <tr 
-                    key={fund.fund_code} 
-                    className={fund.recommend_flag === 'Y' ? styles.recommendRow : (index % 2 === 0 ? styles.evenRow : styles.oddRow)}
-                  >
-                    <td className={styles.td}>
-                      {fund.recommend_flag === 'Y' && <span className={styles.star} title="重点产品">⭐ </span>}
-                      {fund.fund_name}
-                    </td>
-                    <td className={styles.td}>{fund.fund_code}</td>
-                    <td className={styles.td}>{fund.nav_date}</td>
-                    <td className={styles.td}>{fund.nav}</td>
-                    <td className={styles.td}>{formatReturn(fund.shouyi)}</td>
-                    <td className={styles.td}>{formatReturn(fund.three_year_inc)}</td>
-                    <td className={styles.td}>
-                      <a
-                        href={fund.fund_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.link}
-                      >
-                        查看
-                      </a>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        )}
-      </div>
+        {/* 数据表格 */}
+        <Spin spinning={loading}>
+          <Table
+            columns={columns}
+            dataSource={getFilteredFunds()}
+            rowKey="fund_code"
+            rowClassName={rowClassName}
+            pagination={{
+              showSizeChanger: true,
+              showQuickJumper: true,
+              pageSizeOptions: ['10', '20', '50'],
+              showTotal: (total) => `共 ${total} 条`,
+              defaultPageSize: 10,
+            }}
+            locale={{ emptyText: '暂无数据' }}
+            scroll={{ x: 'max-content' }}
+          />
+        </Spin>
 
-      {/* 分页 */}
-      {totalPages > 1 && (
-        <div className={styles.pagination}>
-          <span className={styles.pageInfo}>共 {filteredFunds.length} 条，{totalPages} 页</span>
-          <div className={styles.pageButtons}>
-            <button
-              className={styles.pageBtn}
-              onClick={() => setPage(1)}
-              disabled={page === 1}
-            >
-              首页
-            </button>
-            <button
-              className={styles.pageBtn}
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-            >
-              上一页
-            </button>
-            {getPageNumbers().map(n => (
-              <button
-                key={n}
-                className={`${styles.pageBtn} ${n === page ? styles.pageBtnActive : ''}`}
-                onClick={() => setPage(n)}
-              >
-                {n}
-              </button>
-            ))}
-            <button
-              className={styles.pageBtn}
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-            >
-              下一页
-            </button>
-            <button
-              className={styles.pageBtn}
-              onClick={() => setPage(totalPages)}
-              disabled={page === totalPages}
-            >
-              末页
-            </button>
+        {/* 资讯嵌入区域 */}
+        <div className={styles.newsSection}>
+          <h2 className={styles.sectionTitle}>热门资讯</h2>
+          <div className={styles.iframeWrapper}>
+            <iframe
+              src="https://www.hsbcjt.cn/rmzx/scgd"
+              className={styles.iframe}
+              title="热门资讯"
+              frameBorder="0"
+            />
           </div>
-          <select
-            className={styles.pageSizeSelect}
-            value={pageSize}
-            onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
-          >
-            <option value={10}>10条/页</option>
-            <option value={20}>20条/页</option>
-            <option value={50}>50条/页</option>
-          </select>
         </div>
-      )}
 
-      {/* 资讯嵌入区域 */}
-      <div className={styles.newsSection}>
-        <h2 className={styles.sectionTitle}>热门资讯</h2>
-        <div className={styles.iframeWrapper}>
-          <iframe
-            src="https://www.hsbcjt.cn/rmzx/scgd"
-            className={styles.iframe}
-            title="热门资讯"
-            frameBorder="0"
-          />
+        <div className={styles.newsSection}>
+          <h2 className={styles.sectionTitle}>东方财富热门资讯</h2>
+          <div className={styles.iframeWrapper}>
+            <iframe
+              src="https://finance.eastmoney.com/a/cywjh.html"
+              className={styles.iframe}
+              title="东方财富热门资讯"
+              frameBorder="0"
+            />
+          </div>
         </div>
       </div>
-
-      <div className={styles.newsSection}>
-        <h2 className={styles.sectionTitle}>东方财富热门资讯</h2>
-        <div className={styles.iframeWrapper}>
-          <iframe
-            src="https://finance.eastmoney.com/a/cywjh.html"
-            className={styles.iframe}
-            title="东方财富热门资讯"
-            frameBorder="0"
-          />
-        </div>
-      </div>
-    </div>
+    </ConfigProvider>
   );
 }

@@ -56,93 +56,14 @@
   margin-bottom: 20px;
 }
 
-.searchInput {
-  width: 300px;
-  padding: 8px 12px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.searchInput:focus {
-  border-color: #1890ff;
-}
-
-/* 表格 */
-.tableWrapper {
-  overflow-x: auto;
-  margin-bottom: 32px;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.th {
-  padding: 12px 16px;
-  text-align: left;
-  font-weight: 600;
-  font-size: 14px;
-  color: #333;
-  background: #fafafa;
-  border-bottom: 1px solid #e8e8e8;
-}
-
-.sortable {
-  cursor: pointer;
-  user-select: none;
-}
-
-.sortable:hover {
-  background: #f0f0f0;
-}
-
-.td {
-  padding: 12px 16px;
-  font-size: 14px;
-  color: #333;
-  border-bottom: 1px solid #e8e8e8;
-}
-
-.evenRow {
-  background: #fff;
-}
-
-.oddRow {
-  background: #fafafa;
-}
-
-.evenRow:hover,
-.oddRow:hover {
-  background: #f5f5f5;
-}
-
-.empty {
-  text-align: center;
-  padding: 40px 16px;
-  color: #999;
-}
-
 /* 重点产品行样式 */
 .recommendRow {
-  background: #fff8e1;
+  background: #fff8e1 !important;
 }
 
 .recommendRow:hover {
   background: #fff3c4 !important;
 }
-
-.star {
-  display: inline-block;
-  font-size: 14px;
-}
-
-
 
 .link {
   color: #1890ff;
@@ -151,74 +72,6 @@
 
 .link:hover {
   text-decoration: underline;
-}
-
-/* 分页 */
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-}
-
-.pageInfo {
-  color: #666;
-  font-size: 14px;
-}
-
-.pageButtons {
-  display: flex;
-  gap: 4px;
-}
-
-.pageBtn {
-  padding: 4px 10px;
-  border: 1px solid #d9d9d9;
-  background: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  color: #333;
-  min-width: 32px;
-  text-align: center;
-
-  &:hover:not(:disabled) {
-    border-color: #1890ff;
-    color: #1890ff;
-  }
-
-  &:disabled {
-    color: #ccc;
-    cursor: not-allowed;
-  }
-}
-
-.pageBtnActive {
-  background: #1890ff;
-  color: #fff;
-  border-color: #1890ff;
-
-  &:hover {
-    color: #fff !important;
-  }
-}
-
-.pageSizeSelect {
-  padding: 4px 8px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  font-size: 13px;
-  color: #333;
-  background: #fff;
-  cursor: pointer;
-}
-
-.loading {
-  text-align: center;
-  padding: 40px;
-  color: #999;
 }
 
 /* 资讯区域 */
