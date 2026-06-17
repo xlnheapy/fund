@@ -168,6 +168,7 @@ export default function FundList() {
       <div className={styles.container}>
         {/* 页面标题 */}
         <div className={styles.header}>
+          <img src="/logo.png" alt="logo" className={styles.logo} />
           <h1 className={styles.title}>基金产品列表</h1>
         </div>
 
