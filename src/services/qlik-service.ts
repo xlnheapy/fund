@@ -70,7 +70,8 @@ async function fetchFromQlik(): Promise<Fund[]> {
     const app = await global.openDoc(appId);
     console.log('打开 App 成功:', appId);
 
-    // 创建 HyperCube 查询（包含新字段）
+    // 创建 HyperCube 查询
+    // 注意：qDimensions 数量有限制，数值类字段放到 qMeasures 中
     const hyperCube = await app.createSessionObject({
       qInfo: { qType: 'fund-list' },
       qHyperCubeDef: {
@@ -79,14 +80,15 @@ async function fetchFromQlik(): Promise<Fund[]> {
           { qDef: { qFieldDefs: ['fund_code'], qFieldLabels: ['基金代码'] } },
           { qDef: { qFieldDefs: ['fund_type'], qFieldLabels: ['基金类型'] } },
           { qDef: { qFieldDefs: ['nav_date'], qFieldLabels: ['净值日期'] } },
-          { qDef: { qFieldDefs: ['nav'], qFieldLabels: ['单位净值'] } },
-          { qDef: { qFieldDefs: ['shouyi'], qFieldLabels: ['近一年收益率'] } },
-          { qDef: { qFieldDefs: ['three_year_inc'], qFieldLabels: ['近三年收益率'] } },
           { qDef: { qFieldDefs: ['recommend_flag'], qFieldLabels: ['重点产品标志'] } },
           { qDef: { qFieldDefs: ['purchase_flag'], qFieldLabels: ['是否可购买'] } },
           { qDef: { qFieldDefs: ['fund_url'], qFieldLabels: ['基金详情链接'] } },
         ],
-        qMeasures: [],
+        qMeasures: [
+          { qDef: { qDef: 'nav', qLabel: '单位净值' } },
+          { qDef: { qDef: 'shouyi', qLabel: '近一年收益率' } },
+          { qDef: { qDef: 'three_year_inc', qLabel: '近三年收益率' } },
+        ],
         qInitialDataFetch: [{ qTop: 0, qLeft: 0, qWidth: 10, qHeight: 1000 }],
       },
     });
@@ -97,18 +99,18 @@ async function fetchFromQlik(): Promise<Fund[]> {
 
     console.log('获取到数据行数:', matrix.length);
 
-    // 解析数据
+    // 解析数据（列顺序：Dimensions 0-6，Measures 7-9）
     const funds: Fund[] = matrix.map(row => ({
       fund_name: String(row[0]?.qText || ''),
       fund_code: String(row[1]?.qText || ''),
       fund_type: String(row[2]?.qText || ''),
       nav_date: String(row[3]?.qText || ''),
-      nav: String(row[4]?.qText || ''),
-      shouyi: String(row[5]?.qText || ''),
-      three_year_inc: String(row[6]?.qText || ''),
-      recommend_flag: String(row[7]?.qText || 'N'),
-      purchase_flag: String(row[8]?.qText || 'N'),
-      fund_url: String(row[9]?.qText || ''),
+      recommend_flag: String(row[4]?.qText || 'N'),
+      purchase_flag: String(row[5]?.qText || 'N'),
+      fund_url: String(row[6]?.qText || ''),
+      nav: String(row[7]?.qNum !== undefined ? row[7]?.qNum : (row[7]?.qText || '')),
+      shouyi: String(row[8]?.qNum !== undefined ? row[8]?.qNum : (row[8]?.qText || '')),
+      three_year_inc: String(row[9]?.qNum !== undefined ? row[9]?.qNum : (row[9]?.qText || '')),
     }));
 
     await session.close();
