@@ -40,20 +40,12 @@ const columns: ColumnsType<Fund> = [
     dataIndex: 'fund_name',
     key: 'fund_name',
     render: (text: string, record: Fund) => (
-      <span style={{ position: 'relative', display: 'inline-block' }}>
+      <>
         {text}
         {record.recommend_flag === 'Y' && (
-          <StarFilled
-            style={{
-              color: '#faad14',
-              fontSize: 12,
-              position: 'absolute',
-              top: -6,
-              right: -14,
-            }}
-          />
+          <StarFilled style={{ color: '#faad14', fontSize: 11, marginLeft: 3, verticalAlign: 'super' }} />
         )}
-      </span>
+      </>
     ),
   },
   {
