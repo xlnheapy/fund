@@ -55,6 +55,16 @@ const columns: ColumnsType<Fund> = [
     sorter: (a, b) => a.fund_code.localeCompare(b.fund_code),
   },
   {
+    title: '产品类型',
+    dataIndex: 'product_type',
+    key: 'product_type',
+  },
+  {
+    title: '风险等级',
+    dataIndex: 'risk_level',
+    key: 'risk_level',
+  },
+  {
     title: '净值日期',
     dataIndex: 'nav_date',
     key: 'nav_date',
@@ -66,17 +76,24 @@ const columns: ColumnsType<Fund> = [
     sorter: (a, b) => sortWithNaNLast(a.nav, b.nav),
   },
   {
-    title: '近一年收益率',
+    title: '近一年收益',
     dataIndex: 'shouyi',
     key: 'shouyi',
     sorter: (a, b) => sortWithNaNLast(a.shouyi, b.shouyi),
     render: (value: string) => formatReturn(value),
   },
   {
-    title: '近三年收益率',
+    title: '近三年收益',
     dataIndex: 'three_year_inc',
     key: 'three_year_inc',
     sorter: (a, b) => sortWithNaNLast(a.three_year_inc, b.three_year_inc),
+    render: (value: string) => formatReturn(value),
+  },
+  {
+    title: '今年以来收益',
+    dataIndex: 'ytd_return',
+    key: 'ytd_return',
+    sorter: (a, b) => sortWithNaNLast(a.ytd_return, b.ytd_return),
     render: (value: string) => formatReturn(value),
   },
   {
