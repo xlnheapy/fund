@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Input, Tabs, ConfigProvider, Spin, Checkbox } from 'antd';
-import { StarFilled } from '@ant-design/icons';
+
 import type { ColumnsType } from 'antd/es/table';
 import styles from './index.less';
 import { getFunds, Fund } from '@/services/qlik-service';
@@ -43,7 +43,7 @@ const columns: ColumnsType<Fund> = [
       <>
         {text}
         {record.recommend_flag === 'Y' && (
-          <StarFilled style={{ color: '#faad14', fontSize: 11, marginLeft: 3, verticalAlign: 'super' }} />
+          <span style={{ color: '#faad14', fontSize: 11, marginLeft: 3, verticalAlign: 'super' }}>★</span>
         )}
       </>
     ),
@@ -201,6 +201,12 @@ export default function FundList() {
             scroll={{ x: 'max-content' }}
           />
         </Spin>
+
+        {/* 备注说明 */}
+        <div className={styles.note}>
+          <span style={{ color: '#faad14', marginRight: 4 }}>★</span>
+          带星产品为平台甄选的重点推荐基金，仅供投资参考，不构成投资建议。
+        </div>
 
         {/* 资讯嵌入区域 */}
         <div className={styles.newsSection}>
