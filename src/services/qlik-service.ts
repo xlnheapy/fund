@@ -73,10 +73,10 @@ async function fetchFromQlik(): Promise<Fund[]> {
     const app = await global.openDoc(appId);
     console.log('打开 App 成功:', appId);
 
-    // 创建 HyperCube 查询
-    // 注意：qDimensions 数量有限制，数值类字段放到 qMeasures 中
-    const hyperCube = await app.createSessionObject({
-      qInfo: { qType: 'fund-list' },
+    // 拆成两个 HyperCube 查询，避免单次查询字段数超过 10 个导致返回 0 行
+    // 查询 A：基础信息 + nav/shouyi
+    const cubeA = await app.createSessionObject({
+      qInfo: { qType: 'fund-list-a' },
       qHyperCubeDef: {
         qDimensions: [
           { qDef: { qFieldDefs: ['fund_name'], qFieldLabels: ['基金简称'] } },
@@ -92,35 +92,65 @@ async function fetchFromQlik(): Promise<Fund[]> {
         qMeasures: [
           { qDef: { qDef: 'nav', qLabel: '单位净值' } },
           { qDef: { qDef: 'shouyi', qLabel: '近一年收益率' } },
-          { qDef: { qDef: 'three_year_inc', qLabel: '近三年收益率' } },
-          { qDef: { qDef: 'ytd_return', qLabel: '今年以来收益' } },
         ],
-        qInitialDataFetch: [{ qTop: 0, qLeft: 0, qWidth: 13, qHeight: 1000 }],
+        qInitialDataFetch: [{ qTop: 0, qLeft: 0, qWidth: 11, qHeight: 1000 }],
       },
     });
 
-    // 获取数据
-    const layout = await hyperCube.getLayout();
-    const matrix = layout.qHyperCube?.qDataPages?.[0]?.qMatrix || [];
+    // 查询 B：fund_code + three_year_inc/ytd_return
+    const cubeB = await app.createSessionObject({
+      qInfo: { qType: 'fund-list-b' },
+      qHyperCubeDef: {
+        qDimensions: [
+          { qDef: { qFieldDefs: ['fund_code'], qFieldLabels: ['基金代码'] } },
+        ],
+        qMeasures: [
+          { qDef: { qDef: 'three_year_inc', qLabel: '近三年收益率' } },
+          { qDef: { qDef: 'ytd_return', qLabel: '今年以来收益' } },
+        ],
+        qInitialDataFetch: [{ qTop: 0, qLeft: 0, qWidth: 3, qHeight: 1000 }],
+      },
+    });
 
-    console.log('获取到数据行数:', matrix.length);
+    // 获取查询 A 数据
+    const layoutA = await cubeA.getLayout();
+    const matrixA = layoutA.qHyperCube?.qDataPages?.[0]?.qMatrix || [];
+    console.log('查询 A 行数:', matrixA.length);
 
-    // 解析数据（列顺序：Dimensions 0-8，Measures 9-12）
-    const funds: Fund[] = matrix.map(row => ({
-      fund_name: String(row[0]?.qText || ''),
-      fund_code: String(row[1]?.qText || ''),
-      fund_type: String(row[2]?.qText || ''),
-      product_type: String(row[3]?.qText || ''),
-      risk_level: String(row[4]?.qText || ''),
-      nav_date: String(row[5]?.qText || ''),
-      recommend_flag: String(row[6]?.qText || 'N'),
-      purchase_flag: String(row[7]?.qText || 'N'),
-      fund_url: String(row[8]?.qText || ''),
-      nav: String(row[9]?.qNum !== undefined ? row[9]?.qNum : (row[9]?.qText || '')),
-      shouyi: String(row[10]?.qNum !== undefined ? row[10]?.qNum : (row[10]?.qText || '')),
-      three_year_inc: String(row[11]?.qNum !== undefined ? row[11]?.qNum : (row[11]?.qText || '')),
-      ytd_return: String(row[12]?.qNum !== undefined ? row[12]?.qNum : (row[12]?.qText || '')),
-    }));
+    // 获取查询 B 数据，构建 code → { three_year_inc, ytd_return } 映射
+    const layoutB = await cubeB.getLayout();
+    const matrixB = layoutB.qHyperCube?.qDataPages?.[0]?.qMatrix || [];
+    console.log('查询 B 行数:', matrixB.length);
+
+    const mapB = new Map<string, { three_year_inc: string; ytd_return: string }>();
+    for (const row of matrixB) {
+      const code = String(row[0]?.qText || '');
+      mapB.set(code, {
+        three_year_inc: String(row[1]?.qNum !== undefined ? row[1]?.qNum : (row[1]?.qText || '')),
+        ytd_return: String(row[2]?.qNum !== undefined ? row[2]?.qNum : (row[2]?.qText || '')),
+      });
+    }
+
+    // 合并结果（查询 A 列顺序：D0-D8，M9-M10）
+    const funds: Fund[] = matrixA.map(row => {
+      const code = String(row[1]?.qText || '');
+      const extra = mapB.get(code) || { three_year_inc: '', ytd_return: '' };
+      return {
+        fund_name: String(row[0]?.qText || ''),
+        fund_code: code,
+        fund_type: String(row[2]?.qText || ''),
+        product_type: String(row[3]?.qText || ''),
+        risk_level: String(row[4]?.qText || ''),
+        nav_date: String(row[5]?.qText || ''),
+        recommend_flag: String(row[6]?.qText || 'N'),
+        purchase_flag: String(row[7]?.qText || 'N'),
+        fund_url: String(row[8]?.qText || ''),
+        nav: String(row[9]?.qNum !== undefined ? row[9]?.qNum : (row[9]?.qText || '')),
+        shouyi: String(row[10]?.qNum !== undefined ? row[10]?.qNum : (row[10]?.qText || '')),
+        three_year_inc: extra.three_year_inc,
+        ytd_return: extra.ytd_return,
+      };
+    });
 
     await session.close();
 
